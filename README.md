@@ -48,6 +48,21 @@ open TreadmillTracker.xcodeproj
 Signing & Capabilities で自分のチームを選んで実行してください。HealthKit の capability は
 `project.yml` で設定済みです。歩数（CoreMotion）は実機でのみ取得できます。
 
+### 実機ビルドの署名エラー
+
+`Unable to process request - PLA Update available` が出た場合は、
+[Apple Developer のアカウント](https://developer.apple.com/account/)で最新の
+Apple Developer Program License Agreement を確認して同意してください。
+組織のチームの場合は Account Holder による同意が必要です。
+同意後、Xcode の Signing & Capabilities で対象の Team と
+Automatically manage signing を確認し、Try Again を押して再ビルドします。
+
+HealthKit の Clinical Health Records と Background Delivery は、このアプリでは使用しません。
+Xcode でこれらの追加項目を有効にする必要はありません。
+生成された `Support/` と `.xcodeproj` は Git の対象外です。
+権限設定を再生成する場合は `xcodegen generate` を実行してください。
+プロジェクトの再生成後は、自分の Team を選び直してください。
+
 計算ロジックは Swift Package の `TreadmillKit` にあり、Linux でもテストできます。
 
 ```sh
