@@ -1,0 +1,52 @@
+name: TreadmillTracker
+options:
+  bundleIdPrefix: com.inai17ibar
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+targets:
+  TreadmillKit:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Sources/TreadmillKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.inai17ibar.TreadmillKit
+        GENERATE_INFOPLIST_FILE: true
+  TreadmillTracker:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/TreadmillTracker
+    dependencies:
+      - target: TreadmillKit
+      - sdk: HealthKit.framework
+      - sdk: CoreMotion.framework
+    info:
+      path: Support/Info.plist
+      properties:
+        CFBundleDisplayName: トレッドミル
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        NSHealthShareUsageDescription: 消費カロリーの計算に使う体重と身長を読み込みます。
+        NSHealthUpdateUsageDescription: トレッドミルでのウォーキング・ランニングを、距離と消費カロリーとともにヘルスケアに保存します。
+        NSMotionUsageDescription: ワークアウト中の歩数とピッチ（1 分あたりの歩数）を計測します。
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIApplicationSupportsIndirectInputEvents: true
+    entitlements:
+      path: Support/TreadmillTracker.entitlements
+      properties:
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.inai17ibar.TreadmillTracker
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
