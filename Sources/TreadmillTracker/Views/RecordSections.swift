@@ -28,7 +28,31 @@ struct RecordSections: View {
 
     var body: some View {
         let m = record.metrics
-        Section("概要") {
+        Section {
+            VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: 0) {
+                    MetricLabel(record.startDate.formatted(date: .abbreviated, time: .shortened))
+                    Text(units.distanceText(meters: m.distanceMeters))
+                        .font(Theme.number(80))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
+                    Text(units == .metric ? "キロメートル" : "マイル")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(Theme.secondaryText)
+                }
+                HStack(alignment: .top) {
+                    hero(Format.duration(m.activeDuration), "時間")
+                    hero(units.paceText(speedKmh: m.averageSpeedKmh), "平均ペース")
+                    hero(Format.kcal(m.activeKcal), "消費 kcal")
+                }
+            }
+            .padding(.vertical, 8)
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
+        }
+
+        Section("詳細") {
             LabeledContent("日時", value: record.startDate.formatted(date: .abbreviated, time: .shortened))
             LabeledContent("時間", value: Format.duration(m.activeDuration))
             LabeledContent("距離", value: "\(units.distanceText(meters: m.distanceMeters)) \(units.distanceLabel)")
@@ -56,7 +80,7 @@ struct RecordSections: View {
             Section("速度と傾斜") {
                 Chart(points) { p in
                     LineMark(x: .value("分", p.minutes), y: .value("速度", p.speed))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Theme.volt)
                 }
                 .chartYAxisLabel(units.speedLabel)
                 .frame(height: 140)
@@ -93,6 +117,7 @@ struct RecordSections: View {
             ForEach(record.segments, id: \.self) { seg in
                 HStack {
                     Image(systemName: seg.gait == .run ? "figure.run" : "figure.walk")
+                        .foregroundStyle(Theme.volt)
                     Text("\(units.speedText(kmh: seg.speedKmh)) \(units.speedLabel)・\(Format.percent(seg.inclinePercent))%")
                         .monospacedDigit()
                     Spacer()
@@ -101,5 +126,13 @@ struct RecordSections: View {
                 .font(.callout)
             }
         }
+    }
+
+    private func hero(_ value: String, _ label: String) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(value).font(Theme.number(26)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
+            MetricLabel(label)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

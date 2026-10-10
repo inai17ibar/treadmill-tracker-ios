@@ -13,14 +13,29 @@ struct HistoryView: View {
                                            description: Text("ワークアウトを終了すると、ここに保存されます。"))
                 } else {
                     List {
-                        Section("今週") {
+                        Section {
                             let week = WorkoutTotals.week(of: Date(), records: store.records)
-                            HStack {
-                                total("回数", "\(week.count)")
-                                total("時間", Format.duration(week.activeDuration))
-                                total("距離", "\(units.distanceText(meters: week.distanceMeters)) \(units.distanceLabel)")
-                                total("消費", "\(Format.kcal(week.activeKcal)) kcal")
+                            VStack(alignment: .leading, spacing: 14) {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    MetricLabel("今週")
+                                    Text(units.distanceText(meters: week.distanceMeters))
+                                        .font(Theme.number(72))
+                                        .monospacedDigit()
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.5)
+                                    Text(units == .metric ? "キロメートル" : "マイル")
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(Theme.secondaryText)
+                                }
+                                HStack {
+                                    total("回数", "\(week.count)")
+                                    total("時間", Format.duration(week.activeDuration))
+                                    total("消費 kcal", Format.kcal(week.activeKcal))
+                                }
                             }
+                            .padding(.vertical, 8)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 4, bottom: 0, trailing: 4))
                         }
                         Section("記録") {
                             ForEach(store.records) { record in
@@ -38,24 +53,27 @@ struct HistoryView: View {
                 }
             }
             .navigationTitle("履歴")
+            .scrollContentBackground(.hidden)
+            .background(Theme.background)
         }
     }
 
     private func total(_ title: String, _ value: String) -> some View {
-        VStack(spacing: 2) {
-            Text(title).font(.caption).foregroundStyle(.secondary)
-            Text(value).font(.subheadline.bold()).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
+        VStack(alignment: .leading, spacing: 0) {
+            Text(value).font(Theme.number(26)).monospacedDigit().lineLimit(1).minimumScaleFactor(0.6)
+            MetricLabel(title)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func row(_ record: WorkoutRecord) -> some View {
         let m = record.metrics
         return HStack {
             Image(systemName: record.primaryGait == .run ? "figure.run" : "figure.walk")
-                .font(.title2)
-                .foregroundStyle(.tint)
-                .frame(width: 36)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.black)
+                .frame(width: 40, height: 40)
+                .background(Theme.volt, in: Circle())
             VStack(alignment: .leading, spacing: 2) {
                 Text(record.title).font(.headline)
                 Text(record.startDate.formatted(date: .abbreviated, time: .shortened))
@@ -64,7 +82,7 @@ struct HistoryView: View {
             }
             Spacer()
             VStack(alignment: .trailing, spacing: 2) {
-                Text("\(units.distanceText(meters: m.distanceMeters)) \(units.distanceLabel)").font(.headline).monospacedDigit()
+                Text("\(units.distanceText(meters: m.distanceMeters)) \(units.distanceLabel)").font(Theme.number(22)).monospacedDigit()
                 Text("\(Format.duration(m.activeDuration))・\(Format.kcal(m.activeKcal)) kcal")
                     .font(.caption)
                     .monospacedDigit()
