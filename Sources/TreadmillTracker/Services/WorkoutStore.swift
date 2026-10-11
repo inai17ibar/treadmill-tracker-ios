@@ -10,6 +10,25 @@ final class WorkoutStore {
     private let url: URL
 
     init(url: URL = WorkoutStore.defaultURL) {
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--app-store-screenshots") {
+            // Isolated samples. Never read or overwrite the user's history.
+            self.url = FileManager.default.temporaryDirectory.appendingPathComponent("screenshot-workouts.json")
+            let today = Calendar.current.startOfDay(for: Date())
+            records = (0..<3).map { day in
+                let start = today.addingTimeInterval(Double(-day * 86400 + 8 * 3600))
+                var session = WorkoutSession(speedKmh: 5, inclinePercent: 1, weightKg: 60)
+                session.start(at: start)
+                session.setSpeed(6, at: start.addingTimeInterval(300))
+                session.setIncline(4, at: start.addingTimeInterval(600))
+                session.setIncline(2, at: start.addingTimeInterval(1200))
+                session.setSpeed(5, at: start.addingTimeInterval(1500))
+                session.finish(at: start.addingTimeInterval(1800))
+                return WorkoutRecord(session: session, programName: "傾斜ウォーキング", steps: 3200)!
+            }
+            return
+        }
+        #endif
         self.url = url
         load()
     }

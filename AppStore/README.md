@@ -35,6 +35,30 @@ Apple の「端末上でのみ処理されるデータは収集ではない」�
 
 ## スクリーンショット
 
+撮影済みPNGは `Screenshots/ja-JP/` に保存済み。
+
+- `iPhone-6.9/`: 1320 × 2868（iPhone 17 Pro Max）
+- `iPhone-6.3/`: 1206 × 2622（iPhone 17 Pro）
+- 各7枚：ホーム、メニュー、計測中、履歴、詳細、設定、グラフ
+- PNGは透過なし。画像の合成や数値の書き換えはせず、実際のSwiftUI画面を撮影。
+- 履歴・計測値は撮影専用サンプル。`DEBUG` かつSimulator限定の起動引数でのみ有効。
+  通常起動・実機・Releaseには影響せず、既存の履歴を読み書きしない。
+
+再撮影はXcodeの `AppStoreScreenshots` schemeのTest、または次のコマンドで行う。
+`SIMULATOR_UDID`には撮影専用端末の識別子を指定する。
+
+```sh
+xcodegen generate
+xcodebuild -project TreadmillTracker.xcodeproj -scheme AppStoreScreenshots \
+  -destination "platform=iOS Simulator,id=$SIMULATOR_UDID" \
+  -resultBundlePath /private/tmp/store-screenshots.xcresult \
+  -parallel-testing-enabled NO test CODE_SIGNING_ALLOWED=NO
+python3 scripts/export_store_screenshots.py \
+  /private/tmp/store-screenshots.xcresult AppStore/Screenshots/ja-JP/iPhone-6.9
+```
+
+同じresultBundlePathは再利用できないので、次回は新しいパスを指定する。
+
 実際の1.0.0ビルドから撮影する。`Design/dark-lime-mockup.png` はデザイン案なので、実画面の代わりに提出しない。
 Appleの現行仕様に合うiPhone画面を使い、以下の5場面を候補とする。
 

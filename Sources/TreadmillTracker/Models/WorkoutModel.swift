@@ -50,6 +50,14 @@ final class WorkoutModel {
     func start() {
         guard session.state == .ready else { return }
         let date = Date()
+        #if DEBUG && targetEnvironment(simulator)
+        if ProcessInfo.processInfo.arguments.contains("--app-store-screenshots") {
+            // Deterministic sample elapsed time; no motion/HealthKit or audio in capture runs.
+            session.start(at: date.addingTimeInterval(-12 * 60 - 34))
+            now = date
+            return
+        }
+        #endif
         session.start(at: date)
         now = date
         UIApplication.shared.isIdleTimerDisabled = true
