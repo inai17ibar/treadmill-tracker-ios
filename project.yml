@@ -31,7 +31,7 @@ targets:
       path: Support/Info.plist
       properties:
         CFBundleDisplayName: トレッドミル
-        CFBundleShortVersionString: "0.1.0"
+        CFBundleShortVersionString: "1.0.0"
         CFBundleVersion: "1"
         NSHealthShareUsageDescription: 消費カロリーの計算に使う体重と身長、および履歴の復元に使うこのアプリのワークアウト・距離・アクティブエネルギーを読み込みます。
         NSHealthUpdateUsageDescription: トレッドミルでのウォーキング・ランニングを、距離と消費カロリーとともにヘルスケアに保存します。
@@ -39,6 +39,7 @@ targets:
         UILaunchScreen: {}
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
         UIApplicationSupportsIndirectInputEvents: true
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
       path: Support/TreadmillTracker.entitlements
       properties:

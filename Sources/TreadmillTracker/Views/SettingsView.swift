@@ -75,6 +75,12 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("アプリについて") {
+                    NavigationLink("プライバシーポリシー") { AppInformationView(page: .privacy) }
+                    NavigationLink("サポート・使い方") { AppInformationView(page: .support) }
+                    LabeledContent("バージョン", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "")
+                }
+
                 Section("計算方法") {
                     Text("""
                     GPS が使えないトレッドミルでは、本体に設定した速度と傾斜から計算します。速度や傾斜を変えたら、アプリでも同じ値に合わせてください。

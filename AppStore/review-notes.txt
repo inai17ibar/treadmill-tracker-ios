@@ -1,0 +1,24 @@
+Treadmill Tracker is an indoor walking/running log. No account or sign-in is required, and no treadmill hardware connection is required to review the app.
+
+To review:
+1. Open the Workout tab. Choose a free workout or select a program using the menu selection button.
+2. Enter the speed and incline set on the actual treadmill. Tap Start. For testing, the timer and calculated distance work without moving or connecting any equipment.
+3. Change speed/incline with the +/- controls, pause/resume, then tap Finish and choose the option to save the workout. The summary includes optional distance correction before saving.
+4. Disable Save to Health if testing without HealthKit write access. The app still supports manual workout recording and local history.
+5. The History tab shows saved records. Settings includes profile, units, voice guidance, bulk HealthKit save, history restoration, support, and the privacy policy (also readable offline).
+
+HealthKit usage:
+- Read body mass and height for the profile, and this app's workouts, walking/running distance and active energy for restoration.
+- Write indoor walking/running workouts, distance and active energy. Elevation and app-specific details needed for restoration are workout/sample metadata.
+- HealthKit and motion permissions are optional; refusing them does not prevent timer-based manual recording.
+- Restoration only imports this app's indoor walking/running workouts, not other apps' records. A fresh installation may have nothing to restore.
+- Deleting local history does not delete HealthKit records. Settings and the privacy policy explain this behavior.
+
+Distance is calculated as input speed multiplied by active duration. Estimated calories use the ACSM walking/running metabolic equations with input speed, incline and body mass. There is no GPS measurement, medical diagnosis, or automatic control of exercise equipment. This limitation and the calculation are explained in Settings and in the support page.
+
+Motion step count requires a supported physical iPhone carried by the user. Voice guidance uses Apple speech synthesis; the app does not record audio.
+The app does not upload health/workout records to a developer-operated server and includes no advertising or analytics SDKs.
+
+Support: https://inai17ibar.github.io/treadmill-tracker-ios/support.html
+Privacy: https://inai17ibar.github.io/treadmill-tracker-ios/privacy.html
+Contact: Soichiro Inatani, inai17ibar@gmail.com
