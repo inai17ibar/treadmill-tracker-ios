@@ -15,64 +15,75 @@ struct WorkoutView: View {
     var body: some View {
         let m = model.metrics
         let session = model.session
-        VStack(spacing: 12) {
-            if let program = model.program, let pos = model.programPosition {
-                programBanner(program, pos)
-            } else if let progress = model.goalProgress {
-                goalBar(progress)
-            }
+        VStack(spacing: 0) {
+            // Scrolls on short screens (e.g. iPhone SE) so nothing gets clipped; pause/finish stay pinned below.
+            GeometryReader { geo in
+                ScrollView {
+                    VStack(spacing: 12) {
+                        if let program = model.program, let pos = model.programPosition {
+                            programBanner(program, pos)
+                        } else if let progress = model.goalProgress {
+                            goalBar(progress)
+                        }
 
-            HStack(alignment: .top) {
-                SmallMetric(label: "ペース", value: units.paceText(speedKmh: session.speedKmh), unit: units.paceLabel, color: fg)
-                SmallMetric(label: "時間", value: Format.duration(m.activeDuration), unit: nil, color: fg)
-                SmallMetric(label: "消費", value: Format.kcal(m.activeKcal), unit: "kcal", color: fg)
-            }
+                        HStack(alignment: .top) {
+                            SmallMetric(label: "ペース", value: units.paceText(speedKmh: session.speedKmh), unit: units.paceLabel, color: fg)
+                            SmallMetric(label: "時間", value: Format.duration(m.activeDuration), unit: nil, color: fg)
+                            SmallMetric(label: "消費", value: Format.kcal(m.activeKcal), unit: "kcal", color: fg)
+                        }
 
-            VStack(spacing: 0) {
-                if session.state == .paused {
-                    Text("一時停止中")
-                        .font(Theme.headline(20))
-                        .foregroundStyle(Theme.volt)
+                        VStack(spacing: 0) {
+                            if session.state == .paused {
+                                Text("一時停止中")
+                                    .font(Theme.headline(20))
+                                    .foregroundStyle(Theme.volt)
+                            }
+                            Text(units.distanceText(meters: m.distanceMeters))
+                                .font(Theme.number(model.program == nil ? 120 : 88))
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                                .contentTransition(.numericText())
+                            Text(units == .metric ? "キロメートル" : "マイル")
+                                .font(.headline.weight(.bold))
+                                .opacity(0.7)
+                        }
+                        .foregroundStyle(fg)
+                        .frame(maxWidth: .infinity)
+
+                        HStack(alignment: .top) {
+                            SmallMetric(label: "強度", value: String(format: "%.1f", session.currentRate.mets), unit: "METs", color: fg)
+                            SmallMetric(label: "上昇", value: String(format: "%.0f", m.elevationMeters), unit: "m", color: fg)
+                            SmallMetric(label: model.cadence != nil ? "ピッチ" : "歩数",
+                                        value: model.cadence.map { String(format: "%.0f", $0) } ?? "\(model.steps)",
+                                        unit: model.cadence != nil ? "歩/分" : "歩", color: fg)
+                        }
+
+                        Spacer(minLength: 0)
+
+                        VStack(spacing: 10) {
+                            ControlRow(title: "速度", value: units.speedText(kmh: session.speedKmh), unit: units.speedLabel,
+                                       small: 0.1, large: 1.0, fg: fg, bg: bg) { model.changeSpeed(by: $0) }
+                            ControlRow(title: "傾斜", value: Format.percent(session.inclinePercent), unit: "%",
+                                       small: 0.5, large: 1.0, fg: fg, bg: bg) { model.changeIncline(by: $0) }
+                            ChipPicker(options: GaitMode.allCases,
+                                       selection: Binding(get: { session.gaitMode }, set: { model.setGaitMode($0) }),
+                                       foreground: fg, accent: fg, accentText: bg) { mode in
+                                mode == .auto ? "自動（\(session.gait == .run ? "走" : "歩")）" : mode.displayName
+                            }
+                        }
+                    }
+                    .padding(.vertical, 8)
+                    .frame(minHeight: geo.size.height, alignment: .top)
                 }
-                Text(units.distanceText(meters: m.distanceMeters))
-                    .font(Theme.number(model.program == nil ? 120 : 88))
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .contentTransition(.numericText())
-                Text(units == .metric ? "キロメートル" : "マイル")
-                    .font(.headline.weight(.bold))
-                    .opacity(0.7)
-            }
-            .foregroundStyle(fg)
-            .frame(maxWidth: .infinity)
-
-            HStack(alignment: .top) {
-                SmallMetric(label: "強度", value: String(format: "%.1f", session.currentRate.mets), unit: "METs", color: fg)
-                SmallMetric(label: "上昇", value: String(format: "%.0f", m.elevationMeters), unit: "m", color: fg)
-                SmallMetric(label: model.cadence != nil ? "ピッチ" : "歩数",
-                            value: model.cadence.map { String(format: "%.0f", $0) } ?? "\(model.steps)",
-                            unit: model.cadence != nil ? "歩/分" : "歩", color: fg)
-            }
-
-            Spacer(minLength: 0)
-
-            VStack(spacing: 10) {
-                ControlRow(title: "速度", value: units.speedText(kmh: session.speedKmh), unit: units.speedLabel,
-                           small: 0.1, large: 1.0, fg: fg, bg: bg) { model.changeSpeed(by: $0) }
-                ControlRow(title: "傾斜", value: Format.percent(session.inclinePercent), unit: "%",
-                           small: 0.5, large: 1.0, fg: fg, bg: bg) { model.changeIncline(by: $0) }
-                ChipPicker(options: GaitMode.allCases,
-                           selection: Binding(get: { session.gaitMode }, set: { model.setGaitMode($0) }),
-                           foreground: fg, accent: fg, accentText: bg) { mode in
-                    mode == .auto ? "自動（\(session.gait == .run ? "走" : "歩")）" : mode.displayName
-                }
+                .scrollIndicators(.hidden)
+                .scrollBounceBehavior(.basedOnSize)
             }
 
             controls
+                .padding(.vertical, 8)
         }
         .padding(.horizontal, 20)
-        .padding(.vertical, 8)
         .background(bg.ignoresSafeArea())
         .animation(.easeInOut(duration: 0.3), value: model.isRunning)
         .preferredColorScheme(model.isRunning ? .light : .dark)
@@ -100,7 +111,6 @@ struct WorkoutView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 4)
         .sensoryFeedback(.impact(weight: .medium), trigger: model.isRunning)
     }
 
