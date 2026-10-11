@@ -7,6 +7,8 @@ private struct ActiveWorkout: Identifiable {
 }
 
 struct HomeView: View {
+    @Environment(WorkoutStore.self) private var store
+    @State private var choosingProgram = false
     @AppStorage(SettingsKey.weightKg) private var weightKg = 60.0
     @AppStorage(SettingsKey.units) private var units: UnitSystem = .metric
     @AppStorage(SettingsKey.voiceEnabled) private var voiceEnabled = true
@@ -42,68 +44,152 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("メニュー") {
-                    Picker("メニュー", selection: $programID) {
-                        VStack(alignment: .leading) {
-                            Text("フリー")
-                            Text("速度と傾斜を自由に変えて記録").font(.caption).foregroundStyle(.secondary)
-                        }
-                        .tag("")
-                        ForEach(WorkoutProgram.presets) { p in
-                            VStack(alignment: .leading) {
-                                Text(p.name)
-                                Text(p.summary).font(.caption).foregroundStyle(.secondary)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("TREADMILL")
+                            .font(.caption.weight(.bold)).tracking(3)
+                            .foregroundStyle(Theme.secondary)
+                        Text("今日も、一歩先へ。")
+                            .font(.system(size: 32, weight: .heavy))
+                        Text("屋内でも、積み重ねよう。")
+                            .font(.subheadline).foregroundStyle(Theme.secondary)
+                    }
+                    .padding(.top, 12)
+
+                    let week = WorkoutTotals.week(of: Date(), records: store.records)
+                    HStack(spacing: 16) {
+                        SportMetric(title: "今週の距離", value: units.distanceText(meters: week.distanceMeters), unit: units.distanceLabel)
+                        Rectangle().fill(Theme.secondary.opacity(0.2)).frame(width: 1)
+                        SportMetric(title: "運動時間", value: Format.duration(week.activeDuration))
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .sportCard()
+
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("今日のメニュー").font(.headline)
+                        menuCard
+                        Button { choosingProgram = true } label: {
+                            HStack {
+                                Text("メニューを変更")
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundStyle(Theme.secondary)
                             }
-                            .tag(p.id)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(Theme.text)
+                            .sportCard()
                         }
+                        .buttonStyle(.plain)
                     }
-                    .pickerStyle(.inline)
-                    .labelsHidden()
-                }
 
-                if let program {
-                    programSection(program)
-                } else {
-                    freeSections
-                }
-
-                Section {
-                    Picker("歩く / 走る", selection: $gaitMode) {
-                        ForEach(GaitMode.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                    if let program {
+                        programSection(program)
+                    } else {
+                        freeSections
                     }
-                    .pickerStyle(.segmented)
-                } header: {
-                    Text("歩く / 走る")
-                } footer: {
-                    Text("カロリーの計算式を切り替えます。自動は時速 \(Format.percent(Metabolic.autoRunThresholdKmh)) km 以上を「走る」とします。")
-                }
 
-                Section {
-                    Button {
-                        let setup = WorkoutSetup(program: program, speedKmh: speedKmh, inclinePercent: inclinePercent,
-                                                 gaitMode: gaitMode, goal: goal)
-                        active = ActiveWorkout(model: WorkoutModel(setup: setup, weightKg: weightKg, units: units,
-                                                                   voiceEnabled: voiceEnabled))
-                    } label: {
-                        Label("スタート", systemImage: "play.fill")
-                            .font(.title3.bold())
-                            .frame(maxWidth: .infinity)
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("歩く / 走る").font(.headline)
+                        Picker("歩く / 走る", selection: $gaitMode) {
+                            ForEach(GaitMode.allCases, id: \.self) { Text($0.displayName).tag($0) }
+                        }
+                        .pickerStyle(.segmented)
+                        Text("自動は時速 \(Format.percent(Metabolic.autoRunThresholdKmh)) km 以上で走行の計算式に切り替わります。")
+                            .font(.caption).foregroundStyle(Theme.secondary)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .listRowInsets(EdgeInsets())
+                    .sportCard()
                 }
+                .padding(20)
             }
-            .navigationTitle("トレッドミル")
+            .background(Theme.background)
+            .toolbar(.hidden, for: .navigationBar)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                Button(action: startWorkout) {
+                    Label("スタート", systemImage: "play.fill").font(.title3.bold())
+                }
+                .buttonStyle(SportButtonStyle())
+                .padding(.horizontal, 20).padding(.vertical, 12)
+                .background(Theme.background)
+            }
+            .sheet(isPresented: $choosingProgram) { programPicker }
         }
         .fullScreenCover(item: $active) { workout in
             WorkoutFlowView(model: workout.model) { active = nil }
         }
     }
 
+    private var menuCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Text(program == nil ? "FREE WORKOUT" : "TRAINING PROGRAM")
+                    .font(.caption2.weight(.bold)).tracking(1.5).foregroundStyle(Theme.lime)
+                Spacer()
+                Image(systemName: program == nil ? "figure.run.treadmill" : "chart.bar.xaxis")
+                    .font(.title2).foregroundStyle(Theme.lime)
+            }
+            Text(program?.name ?? "フリーワークアウト")
+                .font(.system(size: 24, weight: .bold))
+            Text(program?.summary ?? "自分のペースで、速度と傾斜を自由に。")
+                .font(.subheadline).foregroundStyle(Theme.secondary)
+            HStack(spacing: 12) {
+                SportMetric(title: "時間", value: program.map { Format.duration($0.totalDuration) } ?? "自由", size: 24)
+                SportMetric(title: "開始速度", value: units.speedText(kmh: program?.steps.first?.speedKmh ?? speedKmh), unit: units.speedLabel, size: 24)
+                SportMetric(title: "開始傾斜", value: Format.percent(program?.steps.first?.inclinePercent ?? inclinePercent), unit: "%", size: 24)
+            }
+        }
+        .sportCard(accent: Theme.lime)
+    }
+
+    private var programPicker: some View {
+        NavigationStack {
+            List {
+                programChoice(id: "", name: "フリーワークアウト", summary: "速度と傾斜を自由に変えて記録")
+                ForEach(WorkoutProgram.presets) { p in
+                    programChoice(id: p.id, name: p.name, summary: p.summary)
+                }
+            }
+            .sportForm()
+            .navigationTitle("メニューを選択")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("完了") { choosingProgram = false }
+                }
+            }
+        }
+    }
+
+    private func programChoice(id: String, name: String, summary: String) -> some View {
+        Button {
+            programID = id
+            choosingProgram = false
+        } label: {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(name).font(.headline).foregroundStyle(Theme.text)
+                    Text(summary).font(.caption).foregroundStyle(Theme.secondary)
+                }
+                Spacer(minLength: 4)
+                if programID == id {
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Theme.lime)
+                }
+            }
+            .padding(.vertical, 8)
+        }
+        .listRowBackground(Theme.surface)
+    }
+
+    private func startWorkout() {
+        let setup = WorkoutSetup(program: program, speedKmh: speedKmh, inclinePercent: inclinePercent,
+                                 gaitMode: gaitMode, goal: goal)
+        active = ActiveWorkout(model: WorkoutModel(setup: setup, weightKg: weightKg, units: units,
+                                                   voiceEnabled: voiceEnabled))
+    }
+
     @ViewBuilder
     private func programSection(_ program: WorkoutProgram) -> some View {
-        Section("内容") {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("メニューの調整").font(.headline)
             LabeledContent("時間", value: Format.duration(program.totalDuration))
             LabeledContent("距離の目安", value: "\(units.distanceText(meters: program.totalDistanceMeters)) \(units.distanceLabel)")
             LabeledContent("消費カロリーの目安",
@@ -124,11 +210,13 @@ struct HomeView: View {
                 }
             }
         }
+        .sportCard()
     }
 
     @ViewBuilder
     private var freeSections: some View {
-        Section("スタート時の設定") {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("スタート時の設定").font(.headline)
             Stepper(value: displayedSpeed, in: units.speed(fromKmh: TreadmillLimits.speedKmh.lowerBound)...units.speed(fromKmh: TreadmillLimits.speedKmh.upperBound), step: 0.1) {
                 LabeledContent("速度", value: "\(units.speedText(kmh: speedKmh)) \(units.speedLabel)")
             }
@@ -136,8 +224,10 @@ struct HomeView: View {
                 LabeledContent("傾斜", value: "\(Format.percent(inclinePercent))%")
             }
         }
+        .sportCard()
 
-        Section("目標") {
+        VStack(alignment: .leading, spacing: 16) {
+            Label("目標", systemImage: "scope").font(.headline)
             Picker("目標", selection: $goalKind) {
                 ForEach(GoalKind.allCases) { Text($0.displayName).tag($0) }
             }
@@ -159,6 +249,7 @@ struct HomeView: View {
                 }
             }
         }
+        .sportCard()
     }
 }
 

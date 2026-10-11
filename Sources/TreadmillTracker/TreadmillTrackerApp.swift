@@ -15,6 +15,9 @@ struct TreadmillTrackerApp: App {
                     .tabItem { Label("設定", systemImage: "gearshape") }
             }
             .environment(store)
+            .tint(Theme.lime)
+            .foregroundStyle(Theme.text)
+            .preferredColorScheme(.dark)
         }
     }
 }

@@ -35,8 +35,10 @@ struct HistoryView: View {
                             }
                         }
                     }
+                    .sportForm()
                 }
             }
+            .background(Theme.background)
             .navigationTitle("履歴")
         }
     }
@@ -54,8 +56,9 @@ struct HistoryView: View {
         return HStack {
             Image(systemName: record.primaryGait == .run ? "figure.run" : "figure.walk")
                 .font(.title2)
-                .foregroundStyle(.tint)
-                .frame(width: 36)
+                .foregroundStyle(Theme.lime)
+                .frame(width: 44, height: 48)
+                .background(Theme.lime.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
             VStack(alignment: .leading, spacing: 2) {
                 Text(record.title).font(.headline)
                 Text(record.startDate.formatted(date: .abbreviated, time: .shortened))
@@ -100,6 +103,7 @@ struct RecordDetailView: View {
                     }
                 }
             }
+            .sportForm()
             .navigationTitle(record.title)
             .navigationBarTitleDisplayMode(.inline)
             .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {

@@ -31,6 +31,15 @@ final class WorkoutStore {
         save()
     }
 
+    /// Import in one atomic write, preserving richer local records and avoiding legacy duplicates.
+    @discardableResult
+    func importHealthRecords(_ restored: [WorkoutRecord]) throws -> Int {
+        let result = WorkoutRecord.mergingHealthRecords(restored, into: records)
+        try WorkoutRecord.encodeList(result.records).write(to: url, options: .atomic)
+        records = result.records
+        return result.added
+    }
+
     func delete(_ ids: Set<UUID>) {
         records.removeAll { ids.contains($0.id) }
         save()

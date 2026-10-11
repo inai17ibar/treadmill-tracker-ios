@@ -85,4 +85,71 @@ final class ProgramRecordTests: XCTestCase {
         XCTAssertEqual(StepMetrics.cadence(steps: 300, duration: 120)!, 150, accuracy: 1e-9)
         XCTAssertNil(StepMetrics.cadence(steps: 0, duration: 60))
     }
+
+    func testHealthArchiveRestoresIntervalsPausesAndCorrection() throws {
+        var session = WorkoutSession(speedKmh: 6, inclinePercent: 3, weightKg: 73)
+        session.start(at: at(0))
+        session.pause(at: at(300))
+        session.resume(at: at(360))
+        session.setSpeed(10, at: at(600))
+        session.finish(at: at(900))
+        let record = try XCTUnwrap(WorkoutRecord(session: session, programName: "インターバル", steps: 1800))
+            .correctingDistance(to: 1800)
+        let header = try JSONDecoder().decode(WorkoutHealthArchive.self,
+                                              from: JSONEncoder().encode(WorkoutHealthArchive(record)))
+        let samples = try JSONDecoder().decode([WorkoutSegment].self, from: JSONEncoder().encode(record.segments))
+        var expected = record
+        expected.savedToHealth = true
+        let restored = try header.restoring(segments: samples)
+        XCTAssertEqual(restored, expected)
+        XCTAssertEqual(restored.metrics.activeDuration, 840)
+        XCTAssertEqual(restored.metrics.distanceMeters, 1800, accuracy: 1e-6)
+        XCTAssertThrowsError(try header.restoring(segments: Array(samples.dropLast())))
+        XCTAssertThrowsError(try header.restoring(segments: Array(samples.reversed())))
+    }
+
+    func testHealthSummaryUsesActualTotalsAndSurvivesLocalPersistence() throws {
+        var record = WorkoutRecord(startDate: at(0), endDate: at(700), segments: [], weightKg: 0, savedToHealth: true)
+        record.healthSummary = HealthWorkoutSummary(duration: 600, distanceMeters: 1250,
+                                                    activeKcal: 87, elevationMeters: 25, gait: .run)
+        let restored = try XCTUnwrap(WorkoutRecord.decodeList(WorkoutRecord.encodeList([record])).first)
+        XCTAssertEqual(restored, record)
+        XCTAssertEqual(restored.metrics.activeDuration, 600)
+        XCTAssertEqual(restored.metrics.distanceMeters, 1250)
+        XCTAssertEqual(restored.metrics.activeKcal, 87)
+        XCTAssertEqual(restored.metrics.elevationMeters, 25)
+        XCTAssertEqual(restored.primaryGait, .run)
+        XCTAssertTrue(restored.segments.isEmpty)
+        XCTAssertEqual(restored.correctingDistance(to: 2000), restored)
+    }
+
+    func testRepeatedRestorationPreservesLocalDetailsAndLegacyIDs() throws {
+        let segment = WorkoutSegment(start: at(0), end: at(600), speedKmh: 6, inclinePercent: 4, gait: .walk)
+        let local = WorkoutRecord(startDate: at(0), endDate: at(600), segments: [segment], weightKg: 60,
+                                  steps: 1000, savedToHealth: true)
+        var oldHealth = WorkoutRecord(startDate: at(0.4), endDate: at(600.4), segments: [], weightKg: 0, savedToHealth: true)
+        oldHealth.healthSummary = HealthWorkoutSummary(duration: 600, distanceMeters: 1000,
+                                                      activeKcal: 80, elevationMeters: nil, gait: .walk)
+        let merged = WorkoutRecord.mergingHealthRecords([oldHealth, oldHealth], into: [local])
+        XCTAssertEqual(merged.added, 0)
+        XCTAssertEqual(merged.records, [local])
+
+        let firstRestore = WorkoutRecord.mergingHealthRecords([local, local], into: [])
+        XCTAssertEqual(firstRestore.added, 1)
+        XCTAssertEqual(firstRestore.records, [local])
+        var summary = oldHealth
+        summary.id = local.id
+        let upgraded = WorkoutRecord.mergingHealthRecords([local], into: [summary])
+        XCTAssertEqual(upgraded.records, [local])
+        XCTAssertEqual(upgraded.added, 0)
+    }
+
+    func testOldLocalJSONLoadsWithoutHealthSummary() throws {
+        let record = WorkoutRecord(startDate: at(0), endDate: at(600), segments: [], weightKg: 60)
+        var object = try XCTUnwrap(JSONSerialization.jsonObject(with: WorkoutRecord.encodeList([record])) as? [[String: Any]])
+        object[0].removeValue(forKey: "healthSummary")
+        let decoded = try WorkoutRecord.decodeList(JSONSerialization.data(withJSONObject: object))
+        XCTAssertEqual(decoded, [record])
+        XCTAssertNil(decoded.first?.healthSummary)
+    }
 }

@@ -33,11 +33,21 @@ struct RecordSections: View {
             LabeledContent("時間", value: Format.duration(m.activeDuration))
             LabeledContent("距離", value: "\(units.distanceText(meters: m.distanceMeters)) \(units.distanceLabel)")
             LabeledContent("消費カロリー（運動分）", value: "\(Format.kcal(m.activeKcal)) kcal")
-            LabeledContent("消費カロリー（安静時を含む）", value: "\(Format.kcal(m.grossKcal)) kcal")
+            if record.healthSummary == nil {
+                LabeledContent("消費カロリー（安静時を含む）", value: "\(Format.kcal(m.grossKcal)) kcal")
+            }
             LabeledContent("平均速度", value: "\(units.speedText(kmh: m.averageSpeedKmh)) \(units.speedLabel)")
             LabeledContent("平均ペース", value: "\(units.paceText(speedKmh: m.averageSpeedKmh)) \(units.paceLabel)")
-            LabeledContent("最大傾斜", value: "\(Format.percent(record.maxInclinePercent))%")
-            LabeledContent("上昇", value: String(format: "%.0f m", m.elevationMeters))
+            if record.healthSummary == nil {
+                LabeledContent("最大傾斜", value: "\(Format.percent(record.maxInclinePercent))%")
+            }
+            if record.healthSummary == nil || record.healthSummary?.elevationMeters != nil {
+                LabeledContent("上昇", value: String(format: "%.0f m", m.elevationMeters))
+            }
+            if record.healthSummary != nil {
+                Text("ヘルスケアから概要を復元した記録です。元の速度・傾斜の区間や体重は保存されていないため、表示できません。")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
             if let steps = record.steps {
                 LabeledContent("歩数", value: "\(steps) 歩")
                 if let stride = StepMetrics.strideMeters(distanceMeters: m.distanceMeters, steps: steps) {
@@ -56,13 +66,13 @@ struct RecordSections: View {
             Section("速度と傾斜") {
                 Chart(points) { p in
                     LineMark(x: .value("分", p.minutes), y: .value("速度", p.speed))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Theme.lime)
                 }
                 .chartYAxisLabel(units.speedLabel)
                 .frame(height: 140)
                 Chart(points) { p in
                     AreaMark(x: .value("分", p.minutes), y: .value("傾斜", p.incline))
-                        .foregroundStyle(.orange.opacity(0.5))
+                        .foregroundStyle(Theme.orange.opacity(0.5))
                 }
                 .chartYAxisLabel("%")
                 .chartXAxisLabel("分")
@@ -89,16 +99,18 @@ struct RecordSections: View {
             }
         }
 
-        Section("区間（\(record.segments.count)）") {
-            ForEach(record.segments, id: \.self) { seg in
-                HStack {
-                    Image(systemName: seg.gait == .run ? "figure.run" : "figure.walk")
-                    Text("\(units.speedText(kmh: seg.speedKmh)) \(units.speedLabel)・\(Format.percent(seg.inclinePercent))%")
-                        .monospacedDigit()
-                    Spacer()
-                    Text(Format.duration(seg.duration)).monospacedDigit().foregroundStyle(.secondary)
+        if record.healthSummary == nil {
+            Section("区間（\(record.segments.count)）") {
+                ForEach(record.segments, id: \.self) { seg in
+                    HStack {
+                        Image(systemName: seg.gait == .run ? "figure.run" : "figure.walk")
+                        Text("\(units.speedText(kmh: seg.speedKmh)) \(units.speedLabel)・\(Format.percent(seg.inclinePercent))%")
+                            .monospacedDigit()
+                        Spacer()
+                        Text(Format.duration(seg.duration)).monospacedDigit().foregroundStyle(.secondary)
+                    }
+                    .font(.callout)
                 }
-                .font(.callout)
             }
         }
     }

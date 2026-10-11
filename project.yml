@@ -33,7 +33,7 @@ targets:
         CFBundleDisplayName: トレッドミル
         CFBundleShortVersionString: "0.1.0"
         CFBundleVersion: "1"
-        NSHealthShareUsageDescription: 消費カロリーの計算に使う体重と身長を読み込みます。
+        NSHealthShareUsageDescription: 消費カロリーの計算に使う体重と身長、および履歴の復元に使うこのアプリのワークアウト・距離・アクティブエネルギーを読み込みます。
         NSHealthUpdateUsageDescription: トレッドミルでのウォーキング・ランニングを、距離と消費カロリーとともにヘルスケアに保存します。
         NSMotionUsageDescription: ワークアウト中の歩数とピッチ（1 分あたりの歩数）を計測します。
         UILaunchScreen: {}
@@ -49,4 +49,4 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.inai17ibar.TreadmillTracker
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
-        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

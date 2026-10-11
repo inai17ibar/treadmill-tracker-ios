@@ -58,6 +58,7 @@ struct SummaryView: View {
                     }
                 }
             }
+            .sportForm()
             .navigationTitle(record.title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -86,9 +87,12 @@ struct SummaryView: View {
     }
 
     private func save() async {
+        guard !saving else { return }
         saving = true
         defer { saving = false }
         var r = record
+        // Keep the completed workout even if HealthKit is interrupted or the app exits.
+        store.add(r)
         var failure: String?
         if saveToHealth, HealthKitService.shared.isAvailable {
             do {
@@ -98,7 +102,7 @@ struct SummaryView: View {
                 failure = error.localizedDescription
             }
         }
-        store.add(r)
+        store.update(r)
         if let failure {
             errorMessage = failure
         } else {
