@@ -2,7 +2,7 @@
 
 Branch: `feature/apple-watch`. Current App Store submission remains unchanged.
 
-Validation: iPhone + embedded Watch simulator build succeeded, standalone Watch simulator build succeeded, and all 26 Swift tests passed. This Mac currently has no installed watchOS simulator runtime; Watch launch/UI and real sensor checks remain unverified.
+Validation: iPhone + embedded Watch simulator build succeeded, standalone Watch simulator build succeeded, and all 28 Swift tests passed. This Mac currently has no installed watchOS simulator runtime; Watch launch/UI and real sensor checks remain unverified.
 
 ## Run on devices
 

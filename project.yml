@@ -69,6 +69,7 @@ targets:
       - path: Sources/TreadmillKit
     settings:
       base:
+        ONLY_ACTIVE_ARCH: NO
         PRODUCT_BUNDLE_IDENTIFIER: com.inai17ibar.TreadmillWatchKit
         PRODUCT_MODULE_NAME: TreadmillKit
         PRODUCT_NAME: TreadmillKit

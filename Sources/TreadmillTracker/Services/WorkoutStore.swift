@@ -43,7 +43,7 @@ final class WorkoutStore {
         let pending = (try? Data(contentsOf: heartInboxURL)).flatMap { try? WorkoutRecord.decodeList($0) } ?? []
         let existing = records.first { $0.id == record.id }?.heartRate ?? []
         let delayed = pending.first { $0.id == record.id }?.heartRate ?? []
-        let points = Array(Set(existing + delayed + (record.heartRate ?? []))).sorted { $0.date < $1.date }
+        let points = Array(Set(existing + delayed + (record.heartRate ?? []))).filter { $0.date >= record.startDate && $0.date <= record.endDate }.sorted { $0.date < $1.date }
         if !points.isEmpty { copy.heartRate = points }
         return copy
     }
@@ -76,7 +76,7 @@ final class WorkoutStore {
         for record in incoming {
             if record.linkedPhone == true {
                 if let index = merged.firstIndex(where: { $0.id == record.id }) {
-                    merged[index].heartRate = Array(Set((merged[index].heartRate ?? []) + (record.heartRate ?? []))).sorted { $0.date < $1.date }
+                    merged[index].heartRate = Array(Set((merged[index].heartRate ?? []) + (record.heartRate ?? []))).filter { $0.date >= merged[index].startDate && $0.date <= merged[index].endDate }.sorted { $0.date < $1.date }
                 }
                 pending.removeAll { $0.id == record.id }; pending.append(record)
                 continue

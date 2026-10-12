@@ -8,6 +8,7 @@ final class WatchWorkoutModel: NSObject, ObservableObject, HKWorkoutSessionDeleg
     static let shared = WatchWorkoutModel()
     @Published var linkedToPhone = false
     private var latestLinked: LinkedWorkout?
+    private var stoppedLinkedID: UUID?
     @Published var settings = HeartRateSettings()
     @Published var running = false
     @Published var paused = false
@@ -66,7 +67,7 @@ final class WatchWorkoutModel: NSObject, ObservableObject, HKWorkoutSessionDeleg
     }
     func handlePhoneLaunch() { WatchBridge.shared.replayContext() }
     private func applyLinkedCommand() async {
-        guard let command = latestLinked, !finishing else { return }
+        guard let command = latestLinked, !finishing, command.id != stoppedLinkedID else { return }
         if command.state == .finished || command.state == .cancelled {
             guard running, linkedToPhone, id == command.id else { return }
             if command.state == .cancelled {
@@ -97,6 +98,7 @@ final class WatchWorkoutModel: NSObject, ObservableObject, HKWorkoutSessionDeleg
     }
     func finish() async {
         guard running, !finishing, let builder else { return }
+        if linkedToPhone { stoppedLinkedID = id }
         finishing = true; timer?.invalidate(); timer = nil
         session?.end()
         let end = Date()
