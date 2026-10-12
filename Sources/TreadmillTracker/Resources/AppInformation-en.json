@@ -28,6 +28,13 @@
         ]
       },
       {
+        "title": "Apple Watch and heart data",
+        "paragraphs": [
+          "The Watch-enabled version uses permitted heart-rate readings for effort guidance and history charts. Settings, workout start/stop state, heart rate and completed records transfer between your paired iPhone and Watch and are stored locally, not sent to publisher servers.",
+          "iPhone and Watch each retain local data. Deleting history on one device does not delete the other device’s copy. Removing the app on each device removes its local data; manage saved Apple Health records separately."
+        ]
+      },
+      {
         "title": "Motion, speech and location",
         "paragraphs": [
           "With permission, Core Motion provides steps and cadence during workouts. Steps may be inaccurate if your iPhone stays on the treadmill console.",
@@ -69,6 +76,17 @@
         "paragraphs": [
           "Enter the speed and incline set on your treadmill, then tap Start. Whenever you adjust the machine, update the app to match. The app does not control the treadmill.",
           "Choose a program for timed speed and incline guidance with speech and haptics. Change the actual treadmill settings yourself. Units, weight and voice guidance can be changed in Settings. The app follows your iPhone’s preferred supported language (English or Japanese); you can change its language in iOS Settings."
+        ]
+      },
+      {
+        "title": "Apple Watch guide (development version)",
+        "paragraphs": [
+          "Watch linking is available in the Watch-enabled version currently in development. Install Treadmill on your paired Apple Watch. On iPhone, open Settings → Apple Watch Heart Rate Guide, choose a suitable target range and tap “Use this target range on Watch”. Enable “Link iPhone workouts with Watch”.",
+          "Wear and unlock your Watch. Open the Watch app once and review the requested Health permissions. Starting a workout on iPhone requests a workout on Watch. Confirm that Watch shows its workout screen and heart rate. Wearing Watch alone does not start continuous monitoring.",
+          "Enter treadmill speed and incline on iPhone. Pause, resume and finish from iPhone, then save the summary on iPhone. During a linked workout, Watch does not save a separate Apple Health workout. Heart data arriving later is added to the same workout record. Heart charts are kept in local history; restoring from Apple Health may restore only a summary.",
+          "If disconnected, iPhone keeps recording and Watch continues in its last received state. Stop commands may not reach Watch until reconnection. If needed, tap “End heart-rate measurement” on Watch and separately finish the workout on iPhone.",
+          "If heart rate is missing, open the Watch app and check fit, lock, Health permissions and Bluetooth/Wi-Fi. Configure a target range first and end any separate Watch workout. iPhone recording works on its own; disabling linking stops automatic Watch start requests.",
+          "For Watch-only workouts, start and finish on Watch. Do not separately start another workout on iPhone at the same time. The first two minutes are a warmup; guidance pauses when readings are unavailable. Your target range does not guarantee weight loss. Listen to your body and stop if you feel unwell."
         ]
       },
       {
