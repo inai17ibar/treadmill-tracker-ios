@@ -29,10 +29,10 @@ enum GoalKind: String, CaseIterable, Identifiable {
 
     var displayName: String {
         switch self {
-        case .none: return "なし"
-        case .duration: return "時間"
-        case .distance: return "距離"
-        case .kcal: return "カロリー"
+        case .none: return L10n.text("なし")
+        case .duration: return L10n.text("時間")
+        case .distance: return L10n.text("距離")
+        case .kcal: return L10n.text("カロリー")
         }
     }
 }

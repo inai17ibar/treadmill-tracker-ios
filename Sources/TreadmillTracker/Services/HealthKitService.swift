@@ -210,8 +210,8 @@ final class HealthKitService {
 
         var errorDescription: String? {
             switch self {
-            case .unavailable: return "この端末ではヘルスケアを利用できません。"
-            case .saveInProgress: return "この記録はヘルスケアへ保存中です。"
+            case .unavailable: return L10n.text("この端末ではヘルスケアを利用できません。")
+            case .saveInProgress: return L10n.text("この記録はヘルスケアへ保存中です。")
             }
         }
     }

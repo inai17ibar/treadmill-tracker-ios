@@ -1,3 +1,4 @@
+import TreadmillKit
 import SwiftUI
 
 @main
@@ -8,11 +9,11 @@ struct TreadmillTrackerApp: App {
         WindowGroup {
             TabView {
                 HomeView()
-                    .tabItem { Label("ワークアウト", systemImage: "figure.run.treadmill") }
+                    .tabItem { Label(L10n.text("ワークアウト"), systemImage: "figure.run.treadmill") }
                 HistoryView()
-                    .tabItem { Label("履歴", systemImage: "list.bullet.rectangle") }
+                    .tabItem { Label(L10n.text("履歴"), systemImage: "list.bullet.rectangle") }
                 SettingsView()
-                    .tabItem { Label("設定", systemImage: "gearshape") }
+                    .tabItem { Label(L10n.text("設定"), systemImage: "gearshape") }
             }
             .environment(store)
             .tint(Theme.lime)

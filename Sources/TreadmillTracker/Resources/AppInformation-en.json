@@ -1,0 +1,125 @@
+{
+  "publisher": "Soichiro Inatani",
+  "email": "inai17ibar@gmail.com",
+  "updated": "2026-10-12",
+  "privacy": {
+    "title": "Privacy policy",
+    "url": "https://inai17ibar.github.io/treadmill-tracker-ios/en/privacy.html",
+    "sections": [
+      {
+        "title": "About this app",
+        "paragraphs": [
+          "Treadmill records indoor walking and running workouts. It is published by Soichiro Inatani. No account is required."
+        ]
+      },
+      {
+        "title": "Information and its purpose",
+        "paragraphs": [
+          "The app stores your weight, height, speed, incline, units, voice guidance and other preferences on your device. Weight is used to estimate calories; height is retained as profile information.",
+          "Workout dates, duration, speed and incline segments, walking or running mode, distance, estimated calories, elevation gain, program, distance corrections and steps are stored on your device for live metrics, history, charts and weekly totals."
+        ]
+      },
+      {
+        "title": "Apple Health integration",
+        "paragraphs": [
+          "With your permission, the app reads weight and height through HealthKit. When restoring history, it reads workouts, walking + running distance and active energy that this app saved to Apple Health.",
+          "If you choose to save to Apple Health, the app writes an indoor walking or running workout, distance and active energy. To support restoration, additional information such as weight, steps, speed and incline segments, program and distance corrections is stored in workout metadata and related samples.",
+          "Health and workout data is not used for advertising, sale or tracking. You can change HealthKit permissions in Apple Health or iOS settings. Manual workout recording works without HealthKit read or write permission."
+        ]
+      },
+      {
+        "title": "Motion, speech and location",
+        "paragraphs": [
+          "With permission, Core Motion provides steps and cadence during workouts. Steps may be inaccurate if your iPhone stays on the treadmill console.",
+          "Voice guidance uses Apple speech synthesis. The app does not record microphone audio or access GPS or location."
+        ]
+      },
+      {
+        "title": "Transfers, advertising and analytics",
+        "paragraphs": [
+          "The app does not send health or workout data to servers operated by the publisher. It includes no advertising SDK, behavioral analytics SDK or tracking features.",
+          "The app does not independently store health information in iCloud or CloudKit. Apple Health synchronization and operating system backups and diagnostics are managed according to your device settings and Apple services.",
+          "Opening the support or privacy website connects to GitHub Pages. Processing associated with website delivery, including IP addresses, is subject to GitHub’s privacy policy. If you email support, the publisher uses your email address and message to respond."
+        ]
+      },
+      {
+        "title": "Storage, deletion and permissions",
+        "paragraphs": [
+          "Swipe left on a workout in History to delete it from the app. Deleting the app removes its local history and preferences. Manage information included in operating system backups through your device backup settings.",
+          "Deleting a workout in the app, or deleting the app itself, does not delete records already saved to Apple Health. Select this app’s data in Apple Health to delete those records. Records remaining in Apple Health may be imported again when you restore history.",
+          "Health and motion permissions can be revoked in iOS or Apple Health settings. The publisher cannot remotely access records on your device or in Apple Health. You do not need to attach health data when contacting support.",
+          "Support emails are retained as needed to handle your request, and information no longer needed is deleted. Contact support if you would like your correspondence deleted."
+        ]
+      },
+      {
+        "title": "Changes and contact",
+        "paragraphs": [
+          "This policy may be updated when features or data handling change. The latest policy and update date are available on this page and in the app.",
+          "Publisher: Soichiro Inatani. Contact: inai17ibar@gmail.com."
+        ]
+      }
+    ]
+  },
+  "support": {
+    "title": "Help & support",
+    "url": "https://inai17ibar.github.io/treadmill-tracker-ios/en/support.html",
+    "sections": [
+      {
+        "title": "Start a workout",
+        "paragraphs": [
+          "Enter the speed and incline set on your treadmill, then tap Start. Whenever you adjust the machine, update the app to match. The app does not control the treadmill.",
+          "Choose a program for timed speed and incline guidance with speech and haptics. Change the actual treadmill settings yourself. Units, weight and voice guidance can be changed in Settings. The app follows your iPhone’s preferred supported language (English or Japanese); you can change its language in iOS Settings."
+        ]
+      },
+      {
+        "title": "Distance or calories differ from the machine",
+        "paragraphs": [
+          "Distance is calculated from entered speed and time. Calories are estimated from weight, speed and incline using ACSM metabolic equations. The app does not measure distance with GPS or communicate with the treadmill.",
+          "After finishing, enter the distance shown on your treadmill to scale all segment speeds by the same ratio and recalculate calories. Make corrections before saving to Apple Health. Weight, handrail use, running or walking form, and the machine’s calculation method can also cause differences."
+        ]
+      },
+      {
+        "title": "Cannot save to Apple Health",
+        "paragraphs": [
+          "Enable Save to Apple Health in Settings or the workout summary, and allow write access to workouts, walking + running distance and active energy. Permission settings vary by iOS version.",
+          "If saving to Apple Health fails, local records remain available in History. Retry from workout details or Save unsaved workouts to Health in Settings."
+        ]
+      },
+      {
+        "title": "Restore history after reinstalling",
+        "paragraphs": [
+          "Before deleting the app, confirm that your workouts have been saved to Apple Health. After reinstalling, tap Restore workouts from Apple Health in Settings and allow read access to workouts, distance and active energy. Workouts not saved to Apple Health cannot be restored.",
+          "Restoration includes indoor walking and running workouts saved by this app. It does not import workouts from other apps. Older records, or records whose details cannot be read, may restore as summaries only.",
+          "If no workouts are found, check read permissions and Health synchronization. HealthKit does not let apps distinguish denied read access from missing data. When restoring on another device, first confirm your records are present in Apple Health."
+        ]
+      },
+      {
+        "title": "Steps do not increase or voice guidance is silent",
+        "paragraphs": [
+          "Step tracking uses motion features on supported iPhones. Check motion permission and carry your iPhone in a pocket or armband. Steps may not increase while the phone rests on the treadmill console.",
+          "For voice guidance, check the app’s Voice guidance setting, device volume and audio output, including Bluetooth devices."
+        ]
+      },
+      {
+        "title": "Delete your data",
+        "paragraphs": [
+          "Swipe left on a workout in History to delete it from the app. Apple Health records are managed separately; delete them in Apple Health if needed. Records remaining in Apple Health may be imported again during restoration. No account deletion process is needed because the app has no account registration."
+        ]
+      },
+      {
+        "title": "Use safely",
+        "paragraphs": [
+          "This app is for general workout recording and is not a medical device. Do not use it for diagnosis, treatment or medical decisions. Displayed distance and calories are estimates.",
+          "Use controls only when safe and follow your treadmill’s safety instructions. Stop exercising if you feel unwell."
+        ]
+      },
+      {
+        "title": "Contact",
+        "paragraphs": [
+          "Publisher: Soichiro Inatani. Support: inai17ibar@gmail.com.",
+          "Describe the issue and what you were doing, and include your app version, iPhone model and iOS version. You do not need to send health or workout data or screenshots from Apple Health."
+        ]
+      }
+    ]
+  }
+}

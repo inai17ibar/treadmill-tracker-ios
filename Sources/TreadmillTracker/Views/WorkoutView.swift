@@ -15,10 +15,10 @@ struct WorkoutView: View {
         ScrollView {
             VStack(spacing: 16) {
                 HStack(alignment: .firstTextBaseline) {
-                    Text(model.program?.name ?? "フリーワークアウト")
+                    Text(model.program?.localizedName ?? L10n.text("フリーワークアウト"))
                         .font(.headline)
                     Spacer(minLength: 8)
-                    Label(model.isRunning ? "計測中" : "一時停止中", systemImage: model.isRunning ? "circle.fill" : "pause.fill")
+                    Label(model.isRunning ? L10n.text("計測中") : L10n.text("一時停止中"), systemImage: model.isRunning ? "circle.fill" : "pause.fill")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(model.isRunning ? Theme.lime : Theme.orange)
                 }
@@ -26,13 +26,13 @@ struct WorkoutView: View {
                     programBanner(program, pos)
                 } else if let progress = model.goalProgress {
                     ProgressView(value: min(1, progress)) {
-                        Text(progress >= 1 ? "目標達成！" : "目標 \(Int(progress * 100))%")
+                        Text(progress >= 1 ? L10n.text("目標達成！") : L10n.format("目標 %@%", String(describing: Int(progress * 100))))
                             .font(.caption.weight(.semibold)).foregroundStyle(Theme.secondary)
                     }
                 }
 
                 VStack(spacing: 2) {
-                    Text("経過時間").font(.caption.weight(.semibold)).foregroundStyle(Theme.secondary)
+                    Text(L10n.text("経過時間")).font(.caption.weight(.semibold)).foregroundStyle(Theme.secondary)
                     Text(Format.duration(m.activeDuration))
                         .font(.system(size: 78, weight: .heavy))
                         .monospacedDigit().lineLimit(1).minimumScaleFactor(0.45)
@@ -41,41 +41,41 @@ struct WorkoutView: View {
                 }
                 .accessibilityElement(children: .combine)
                 HStack(spacing: 20) {
-                    SportMetric(title: "距離", value: units.distanceText(meters: m.distanceMeters), unit: units.distanceLabel, size: 34)
+                    SportMetric(title: L10n.text("距離"), value: units.distanceText(meters: m.distanceMeters), unit: units.distanceLabel, size: 34)
                     Rectangle().fill(Theme.secondary.opacity(0.2)).frame(width: 1)
-                    SportMetric(title: "消費カロリー", value: Format.kcal(m.activeKcal), unit: "kcal", size: 34)
+                    SportMetric(title: L10n.text("消費カロリー"), value: Format.kcal(m.activeKcal), unit: "kcal", size: 34)
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.bottom, 4)
 
-                ControlRow(title: "速度", value: units.speedText(kmh: session.speedKmh), unit: units.speedLabel,
+                ControlRow(title: L10n.text("速度"), value: units.speedText(kmh: session.speedKmh), unit: units.speedLabel,
                            small: 0.1, large: 1, accent: Theme.lime) { model.changeSpeed(by: $0) }
-                ControlRow(title: "傾斜", value: Format.percent(session.inclinePercent), unit: "%",
+                ControlRow(title: L10n.text("傾斜"), value: Format.percent(session.inclinePercent), unit: "%",
                            small: 0.5, large: 1, accent: Theme.orange) { model.changeIncline(by: $0) }
 
                 HStack(spacing: 16) {
-                    SportMetric(title: "ペース", value: units.paceText(speedKmh: session.speedKmh), unit: units.paceLabel, size: 23)
-                    SportMetric(title: "歩数", value: "\(model.steps)", unit: "歩", size: 23)
+                    SportMetric(title: L10n.text("ペース"), value: units.paceText(speedKmh: session.speedKmh), unit: units.paceLabel, size: 23)
+                    SportMetric(title: L10n.text("歩数"), value: "\(model.steps)", unit: L10n.text("歩"), size: 23)
                 }
                 .sportCard()
 
                 DisclosureGroup {
                     HStack(spacing: 12) {
-                        SportMetric(title: "強度", value: String(format: "%.1f", session.currentRate.mets), unit: "METs", size: 22)
-                        SportMetric(title: "上昇", value: String(format: "%.0f", m.elevationMeters), unit: "m", size: 22)
+                        SportMetric(title: L10n.text("強度"), value: String(format: "%.1f", session.currentRate.mets), unit: "METs", size: 22)
+                        SportMetric(title: L10n.text("上昇"), value: String(format: "%.0f", m.elevationMeters), unit: "m", size: 22)
                         if let cadence = model.cadence {
-                            SportMetric(title: "ピッチ", value: String(format: "%.0f", cadence), unit: "歩/分", size: 22)
+                            SportMetric(title: L10n.text("ピッチ"), value: String(format: "%.0f", cadence), unit: L10n.text("歩/分"), size: 22)
                         }
                     }
                     .padding(.vertical, 12)
-                    Picker("歩く / 走る", selection: Binding(get: { session.gaitMode }, set: { model.setGaitMode($0) })) {
+                    Picker(L10n.text("歩く / 走る"), selection: Binding(get: { session.gaitMode }, set: { model.setGaitMode($0) })) {
                         ForEach(GaitMode.allCases, id: \.self) { mode in
-                            Text(mode == .auto ? "自動（\(session.gait == .run ? "走" : "歩")）" : mode.displayName).tag(mode)
+                            Text(mode == .auto ? L10n.format("自動（%@）", session.gait.displayName) : mode.displayName).tag(mode)
                         }
                     }
                     .pickerStyle(.segmented)
                 } label: {
-                    Text("詳細と歩行・走行の切り替え")
+                    Text(L10n.text("詳細と歩行・走行の切り替え"))
                         .font(.subheadline.weight(.semibold)).foregroundStyle(Theme.secondary)
                 }
                 .sportCard()
@@ -86,39 +86,39 @@ struct WorkoutView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             HStack(spacing: 12) {
                 Button { model.togglePause() } label: {
-                    Label(model.isRunning ? "一時停止" : "再開", systemImage: model.isRunning ? "pause.fill" : "play.fill")
+                    Label(model.isRunning ? L10n.text("一時停止") : L10n.text("再開"), systemImage: model.isRunning ? "pause.fill" : "play.fill")
                 }
                 .buttonStyle(SportButtonStyle(fill: model.isRunning ? Theme.elevated : Theme.lime,
                                              foreground: model.isRunning ? Theme.text : Theme.background))
                 Button(role: .destructive) { confirmFinish = true } label: {
-                    Label("終了", systemImage: "stop.fill")
+                    Label(L10n.text("終了"), systemImage: "stop.fill")
                 }
                 .buttonStyle(SportButtonStyle(fill: Theme.red, foreground: Theme.text))
             }
             .padding(.horizontal, 20).padding(.vertical, 12)
             .background(Theme.background)
         }
-        .confirmationDialog("ワークアウトを終了しますか？", isPresented: $confirmFinish, titleVisibility: .visible) {
-            Button("終了して記録する") { model.finish() }
-            Button("記録せずに破棄", role: .destructive) { onCancel() }
-            Button("続ける", role: .cancel) {}
+        .confirmationDialog(L10n.text("ワークアウトを終了しますか？"), isPresented: $confirmFinish, titleVisibility: .visible) {
+            Button(L10n.text("終了して記録する")) { model.finish() }
+            Button(L10n.text("記録せずに破棄"), role: .destructive) { onCancel() }
+            Button(L10n.text("続ける"), role: .cancel) {}
         }
     }
 
     private func programBanner(_ program: WorkoutProgram, _ pos: ProgramPosition) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(pos.isComplete ? "メニュー完了" : "ステップ \(pos.stepIndex + 1) / \(program.steps.count) · \(pos.step?.label ?? "")")
+                Text(pos.isComplete ? L10n.text("メニュー完了") : L10n.format("ステップ %@ / %@ · %@", String(describing: pos.stepIndex + 1), String(describing: program.steps.count), String(describing: pos.step?.localizedLabel ?? "")))
                 Spacer()
                 if !pos.isComplete { Text(Format.duration(pos.remainingInStep)).monospacedDigit() }
             }
             .font(.caption.weight(.semibold)).foregroundStyle(Theme.secondary)
             ProgressView(value: pos.isComplete ? 1 : pos.stepProgress)
             if let next = pos.next, !pos.isComplete {
-                Text("次: \(next.label)  \(units.speedText(kmh: next.speedKmh)) \(units.speedLabel)・傾斜 \(Format.percent(next.inclinePercent))%")
+                Text(L10n.format("次: %@  %@ %@・傾斜 %@%", String(describing: next.localizedLabel), String(describing: units.speedText(kmh: next.speedKmh)), String(describing: units.speedLabel), String(describing: Format.percent(next.inclinePercent))))
                     .font(.caption).foregroundStyle(Theme.secondary)
             } else if pos.isComplete {
-                Text("このまま続けるか「終了」で記録します").font(.caption).foregroundStyle(Theme.secondary)
+                Text(L10n.text("このまま続けるか「終了」で記録します")).font(.caption).foregroundStyle(Theme.secondary)
             }
         }
     }

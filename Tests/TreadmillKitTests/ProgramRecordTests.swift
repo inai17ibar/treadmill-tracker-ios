@@ -56,7 +56,7 @@ final class ProgramRecordTests: XCTestCase {
         let r = try XCTUnwrap(WorkoutRecord(session: s, programName: nil, steps: 3000))
         XCTAssertEqual(r.metrics.distanceMeters, 2500, accuracy: 1e-6)
         XCTAssertEqual(r.primaryGait, .walk)
-        XCTAssertEqual(r.title, "ウォーキング")
+        XCTAssertEqual(r.title, Gait.walk.displayName)
         let fixed = r.correctingDistance(to: 2000)
         XCTAssertEqual(fixed.metrics.distanceMeters, 2000, accuracy: 1e-6)
         XCTAssertEqual(fixed.distanceCorrection, 0.8, accuracy: 1e-9)

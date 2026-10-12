@@ -1,3 +1,4 @@
+import TreadmillKit
 import SwiftUI
 
 /// Bundled content remains readable offline; the same source generates the public support site.
@@ -5,7 +6,7 @@ struct AppInformationView: View {
     enum Page {
         case privacy, support
 
-        var title: String { self == .privacy ? "プライバシーポリシー" : "サポート・使い方" }
+        var title: String { self == .privacy ? L10n.text("プライバシーポリシー") : L10n.text("サポート・使い方") }
     }
 
     let page: Page
@@ -29,7 +30,7 @@ struct AppInformationView: View {
     }
 
     private static let content: Content? = {
-        guard let url = Bundle.main.url(forResource: "AppInformation", withExtension: "json"),
+        guard let url = Bundle.main.url(forResource: L10n.languageCode == "ja" ? "AppInformation" : "AppInformation-en", withExtension: "json"),
               let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(Content.self, from: data)
     }()
@@ -40,9 +41,9 @@ struct AppInformationView: View {
                 let document = page == .privacy ? content.privacy : content.support
                 List {
                     Section {
-                        Text("更新日：\(content.updated)")
+                        Text(L10n.format("更新日：%@", String(describing: content.updated)))
                             .font(.footnote).foregroundStyle(Theme.secondary)
-                        Link("Webで開く", destination: document.url)
+                        Link(L10n.text("Webで開く"), destination: document.url)
                     }
                     ForEach(document.sections.indices, id: \.self) { index in
                         let section = document.sections[index]
@@ -53,7 +54,7 @@ struct AppInformationView: View {
                             }
                         }
                     }
-                    Section("お問い合わせ") {
+                    Section(L10n.text("お問い合わせ")) {
                         Text(content.publisher)
                         if let emailURL = URL(string: "mailto:\(content.email)") {
                             Link(content.email, destination: emailURL)
@@ -62,7 +63,7 @@ struct AppInformationView: View {
                 }
                 .sportForm()
             } else {
-                ContentUnavailableView("案内を読み込めませんでした", systemImage: "doc.text")
+                ContentUnavailableView(L10n.text("案内を読み込めませんでした"), systemImage: "doc.text")
             }
         }
         .navigationTitle(page.title)

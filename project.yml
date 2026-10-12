@@ -1,5 +1,6 @@
 name: TreadmillTracker
 options:
+  developmentLanguage: en
   bundleIdPrefix: com.inai17ibar
   deploymentTarget:
     iOS: "17.0"
@@ -19,7 +20,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.inai17ibar.TreadmillKit
         GENERATE_INFOPLIST_FILE: true
         MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "2"
   TreadmillTracker:
     type: application
     platform: iOS
@@ -33,10 +34,10 @@ targets:
       path: Support/Info.plist
       properties:
         CFBundleDisplayName: トレッドミル
-        CFBundleDevelopmentRegion: ja
-        CFBundleLocalizations: [ja]
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [ja, en]
         CFBundleShortVersionString: "1.0.0"
-        CFBundleVersion: "1"
+        CFBundleVersion: "2"
         NSHealthShareUsageDescription: 消費カロリーの計算に使う体重と身長、および履歴の復元に使うこのアプリのワークアウト・距離・アクティブエネルギーを読み込みます。
         NSHealthUpdateUsageDescription: トレッドミルでのウォーキング・ランニングを、距離と消費カロリーとともにヘルスケアに保存します。
         NSMotionUsageDescription: ワークアウト中の歩数とピッチ（1 分あたりの歩数）を計測します。

@@ -67,9 +67,9 @@ final class WorkoutModel {
         }
         if let step = program?.steps.first {
             lastStepIndex = 0
-            coach.say("\(program?.name ?? "")を始めます。\(instruction(for: step))")
+            coach.say(L10n.format("%@を始めます。%@", String(describing: program?.localizedName ?? ""), String(describing: instruction(for: step))))
         } else {
-            coach.say("ワークアウトを始めます。速度 \(speedPhrase(session.speedKmh))")
+            coach.say(L10n.format("ワークアウトを始めます。速度 %@", String(describing: speedPhrase(session.speedKmh))))
         }
         tickTask = Task { [weak self] in
             while !Task.isCancelled {
@@ -85,10 +85,10 @@ final class WorkoutModel {
         switch session.state {
         case .running:
             session.pause(at: date)
-            coach.say("一時停止")
+            coach.say(L10n.text("一時停止"))
         case .paused:
             session.resume(at: date)
-            coach.say("再開します")
+            coach.say(L10n.text("再開します"))
         default:
             break
         }
@@ -148,45 +148,45 @@ final class WorkoutModel {
             if pos.isComplete {
                 programCompleted = true
                 haptics.notificationOccurred(.success)
-                coach.say("\(program.name)が完了しました。お疲れさまでした。")
+                coach.say(L10n.format("%@が完了しました。お疲れさまでした。", String(describing: program.localizedName)))
             } else if pos.stepIndex != lastStepIndex, let step = pos.step {
                 lastStepIndex = pos.stepIndex
                 let date = Date()
                 session.setSpeed(step.speedKmh, at: date)
                 session.setIncline(step.inclinePercent, at: date)
                 haptics.notificationOccurred(.warning)
-                coach.say("\(step.label)。\(instruction(for: step))")
+                coach.say("\(step.localizedLabel)。\(instruction(for: step))")
             } else if let next = pos.next, pos.remainingInStep <= 10, (pos.step?.duration ?? 0) > 20,
                       announcedNextFor != pos.stepIndex {
                 announcedNextFor = pos.stepIndex
-                coach.say("10 秒後に\(next.label)")
+                coach.say(L10n.format("10 秒後に%@", String(describing: next.localizedLabel)))
             }
         }
 
         let unitsDone = Int(units.distance(fromMeters: m.distanceMeters))
         if unitsDone > announcedUnits {
             announcedUnits = unitsDone
-            coach.say("\(unitsDone) \(units == .metric ? "キロ" : "マイル")。\(Self.spokenDuration(m.activeDuration))")
+            coach.say("\(unitsDone) \(units == .metric ? L10n.text("キロ") : L10n.text("マイル"))。\(Self.spokenDuration(m.activeDuration))")
         }
 
         if !goalAnnounced, goal.isReached(m) {
             goalAnnounced = true
             haptics.notificationOccurred(.success)
-            coach.say("目標を達成しました！")
+            coach.say(L10n.text("目標を達成しました！"))
         }
     }
 
     private static func spokenDuration(_ seconds: TimeInterval) -> String {
         let total = Int(seconds)
         let h = total / 3600, m = (total % 3600) / 60, s = total % 60
-        return (h > 0 ? "\(h)時間" : "") + "\(m)分\(s)秒"
+        return (h > 0 ? L10n.format("%@時間", String(describing: h)) : "") + L10n.format("%@分%@秒", String(describing: m), String(describing: s))
     }
 
     private func speedPhrase(_ kmh: Double) -> String {
-        "\(units.speedText(kmh: kmh)) \(units == .metric ? "キロ" : "マイル")"
+        L10n.format(units == .metric ? "%@ キロ毎時" : "%@ マイル毎時", units.speedText(kmh: kmh))
     }
 
     private func instruction(for step: ProgramStep) -> String {
-        "速度を\(speedPhrase(step.speedKmh))、傾斜を\(Format.percent(step.inclinePercent))パーセントにしてください"
+        L10n.format("速度を%@、傾斜を%@パーセントにしてください", String(describing: speedPhrase(step.speedKmh)), String(describing: Format.percent(step.inclinePercent)))
     }
 }

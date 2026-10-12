@@ -50,28 +50,28 @@ struct HomeView: View {
                         Text("TREADMILL")
                             .font(.caption.weight(.bold)).tracking(3)
                             .foregroundStyle(Theme.secondary)
-                        Text("今日も、一歩先へ。")
+                        Text(L10n.text("今日も、一歩先へ。"))
                             .font(.system(size: 32, weight: .heavy))
-                        Text("屋内でも、積み重ねよう。")
+                        Text(L10n.text("屋内でも、積み重ねよう。"))
                             .font(.subheadline).foregroundStyle(Theme.secondary)
                     }
                     .padding(.top, 12)
 
                     let week = WorkoutTotals.week(of: Date(), records: store.records)
                     HStack(spacing: 16) {
-                        SportMetric(title: "今週の距離", value: units.distanceText(meters: week.distanceMeters), unit: units.distanceLabel)
+                        SportMetric(title: L10n.text("今週の距離"), value: units.distanceText(meters: week.distanceMeters), unit: units.distanceLabel)
                         Rectangle().fill(Theme.secondary.opacity(0.2)).frame(width: 1)
-                        SportMetric(title: "運動時間", value: Format.duration(week.activeDuration))
+                        SportMetric(title: L10n.text("運動時間"), value: Format.duration(week.activeDuration))
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     .sportCard()
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("今日のメニュー").font(.headline)
+                        Text(L10n.text("今日のメニュー")).font(.headline)
                         menuCard
                         Button { choosingProgram = true } label: {
                             HStack {
-                                Text("メニューを変更")
+                                Text(L10n.text("メニューを変更"))
                                 Spacer()
                                 Image(systemName: "chevron.right").foregroundStyle(Theme.secondary)
                             }
@@ -89,12 +89,12 @@ struct HomeView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("歩く / 走る").font(.headline)
-                        Picker("歩く / 走る", selection: $gaitMode) {
+                        Text(L10n.text("歩く / 走る")).font(.headline)
+                        Picker(L10n.text("歩く / 走る"), selection: $gaitMode) {
                             ForEach(GaitMode.allCases, id: \.self) { Text($0.displayName).tag($0) }
                         }
                         .pickerStyle(.segmented)
-                        Text("自動は時速 \(Format.percent(Metabolic.autoRunThresholdKmh)) km 以上で走行の計算式に切り替わります。")
+                        Text(L10n.format("自動は時速 %@ km 以上で走行の計算式に切り替わります。", String(describing: Format.percent(Metabolic.autoRunThresholdKmh))))
                             .font(.caption).foregroundStyle(Theme.secondary)
                     }
                     .sportCard()
@@ -105,7 +105,7 @@ struct HomeView: View {
             .toolbar(.hidden, for: .navigationBar)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 Button(action: startWorkout) {
-                    Label("スタート", systemImage: "play.fill").font(.title3.bold())
+                    Label(L10n.text("スタート"), systemImage: "play.fill").font(.title3.bold())
                 }
                 .buttonStyle(SportButtonStyle())
                 .padding(.horizontal, 20).padding(.vertical, 12)
@@ -127,14 +127,14 @@ struct HomeView: View {
                 Image(systemName: program == nil ? "figure.run.treadmill" : "chart.bar.xaxis")
                     .font(.title2).foregroundStyle(Theme.lime)
             }
-            Text(program?.name ?? "フリーワークアウト")
+            Text(program?.localizedName ?? L10n.text("フリーワークアウト"))
                 .font(.system(size: 24, weight: .bold))
-            Text(program?.summary ?? "自分のペースで、速度と傾斜を自由に。")
+            Text(program?.localizedSummary ?? L10n.text("自分のペースで、速度と傾斜を自由に。"))
                 .font(.subheadline).foregroundStyle(Theme.secondary)
             HStack(spacing: 12) {
-                SportMetric(title: "時間", value: program.map { Format.duration($0.totalDuration) } ?? "自由", size: 24)
-                SportMetric(title: "開始速度", value: units.speedText(kmh: program?.steps.first?.speedKmh ?? speedKmh), unit: units.speedLabel, size: 24)
-                SportMetric(title: "開始傾斜", value: Format.percent(program?.steps.first?.inclinePercent ?? inclinePercent), unit: "%", size: 24)
+                SportMetric(title: L10n.text("時間"), value: program.map { Format.duration($0.totalDuration) } ?? L10n.text("自由"), size: 24)
+                SportMetric(title: L10n.text("開始速度"), value: units.speedText(kmh: program?.steps.first?.speedKmh ?? speedKmh), unit: units.speedLabel, size: 24)
+                SportMetric(title: L10n.text("開始傾斜"), value: Format.percent(program?.steps.first?.inclinePercent ?? inclinePercent), unit: "%", size: 24)
             }
         }
         .sportCard(accent: Theme.lime)
@@ -143,17 +143,17 @@ struct HomeView: View {
     private var programPicker: some View {
         NavigationStack {
             List {
-                programChoice(id: "", name: "フリーワークアウト", summary: "速度と傾斜を自由に変えて記録")
+                programChoice(id: "", name: L10n.text("フリーワークアウト"), summary: L10n.text("速度と傾斜を自由に変えて記録"))
                 ForEach(WorkoutProgram.presets) { p in
-                    programChoice(id: p.id, name: p.name, summary: p.summary)
+                    programChoice(id: p.id, name: p.localizedName, summary: p.localizedSummary)
                 }
             }
             .sportForm()
-            .navigationTitle("メニューを選択")
+            .navigationTitle(L10n.text("メニューを選択"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完了") { choosingProgram = false }
+                    Button(L10n.text("完了")) { choosingProgram = false }
                 }
             }
         }
@@ -189,18 +189,18 @@ struct HomeView: View {
     @ViewBuilder
     private func programSection(_ program: WorkoutProgram) -> some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("メニューの調整").font(.headline)
-            LabeledContent("時間", value: Format.duration(program.totalDuration))
-            LabeledContent("距離の目安", value: "\(units.distanceText(meters: program.totalDistanceMeters)) \(units.distanceLabel)")
-            LabeledContent("消費カロリーの目安",
+            Text(L10n.text("メニューの調整")).font(.headline)
+            LabeledContent(L10n.text("時間"), value: Format.duration(program.totalDuration))
+            LabeledContent(L10n.text("距離の目安"), value: "\(units.distanceText(meters: program.totalDistanceMeters)) \(units.distanceLabel)")
+            LabeledContent(L10n.text("消費カロリーの目安"),
                            value: "\(Format.kcal(program.estimatedActiveKcal(weightKg: weightKg, gaitMode: gaitMode))) kcal")
             Stepper(value: $intensity, in: 0.7...1.3, step: 0.05) {
-                LabeledContent("速度の強さ", value: "\(Int((intensity * 100).rounded()))%")
+                LabeledContent(L10n.text("速度の強さ"), value: "\(Int((intensity * 100).rounded()))%")
             }
-            DisclosureGroup("ステップ（\(program.steps.count)）") {
+            DisclosureGroup(L10n.format("ステップ（%@）", String(describing: program.steps.count))) {
                 ForEach(Array(program.steps.enumerated()), id: \.offset) { _, step in
                     HStack {
-                        Text(step.label)
+                        Text(step.localizedLabel)
                         Spacer()
                         Text("\(Format.duration(step.duration))・\(units.speedText(kmh: step.speedKmh)) \(units.speedLabel)・\(Format.percent(step.inclinePercent))%")
                             .monospacedDigit()
@@ -216,19 +216,19 @@ struct HomeView: View {
     @ViewBuilder
     private var freeSections: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("スタート時の設定").font(.headline)
+            Text(L10n.text("スタート時の設定")).font(.headline)
             Stepper(value: displayedSpeed, in: units.speed(fromKmh: TreadmillLimits.speedKmh.lowerBound)...units.speed(fromKmh: TreadmillLimits.speedKmh.upperBound), step: 0.1) {
-                LabeledContent("速度", value: "\(units.speedText(kmh: speedKmh)) \(units.speedLabel)")
+                LabeledContent(L10n.text("速度"), value: "\(units.speedText(kmh: speedKmh)) \(units.speedLabel)")
             }
             Stepper(value: $inclinePercent, in: TreadmillLimits.inclinePercent, step: 0.5) {
-                LabeledContent("傾斜", value: "\(Format.percent(inclinePercent))%")
+                LabeledContent(L10n.text("傾斜"), value: "\(Format.percent(inclinePercent))%")
             }
         }
         .sportCard()
 
         VStack(alignment: .leading, spacing: 16) {
-            Label("目標", systemImage: "scope").font(.headline)
-            Picker("目標", selection: $goalKind) {
+            Label(L10n.text("目標"), systemImage: "scope").font(.headline)
+            Picker(L10n.text("目標"), selection: $goalKind) {
                 ForEach(GoalKind.allCases) { Text($0.displayName).tag($0) }
             }
             .pickerStyle(.segmented)
@@ -237,15 +237,15 @@ struct HomeView: View {
                 EmptyView()
             case .duration:
                 Stepper(value: $goalMinutes, in: 5...180, step: 5) {
-                    LabeledContent("時間", value: "\(Int(goalMinutes)) 分")
+                    LabeledContent(L10n.text("時間"), value: L10n.format("%@ 分", String(describing: Int(goalMinutes))))
                 }
             case .distance:
                 Stepper(value: $goalDistance, in: 0.5...42, step: 0.5) {
-                    LabeledContent("距離", value: String(format: "%.1f %@", goalDistance, units.distanceLabel))
+                    LabeledContent(L10n.text("距離"), value: String(format: "%.1f %@", goalDistance, units.distanceLabel))
                 }
             case .kcal:
                 Stepper(value: $goalKcal, in: 50...1500, step: 50) {
-                    LabeledContent("消費カロリー", value: "\(Int(goalKcal)) kcal")
+                    LabeledContent(L10n.text("消費カロリー"), value: "\(Int(goalKcal)) kcal")
                 }
             }
         }

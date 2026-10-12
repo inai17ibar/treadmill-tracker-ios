@@ -134,3 +134,12 @@ extension WorkoutProgram {
             ])
     ]
 }
+
+public extension WorkoutProgram {
+    var localizedName: String { L10n.text(name) }
+    var localizedSummary: String { L10n.text(summary) }
+}
+
+public extension ProgramStep {
+    var localizedLabel: String { L10n.text(label) }
+}

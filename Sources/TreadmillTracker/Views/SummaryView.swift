@@ -29,32 +29,32 @@ struct SummaryView: View {
 
                 Section {
                     HStack {
-                        TextField("トレッドミルに表示された距離", text: $displayedDistance)
+                        TextField(L10n.text("トレッドミルに表示された距離"), text: $displayedDistance)
                             .keyboardType(.decimalPad)
                         Text(units.distanceLabel).foregroundStyle(.secondary)
                     }
-                    Button("この距離に合わせる") {
+                    Button(L10n.text("この距離に合わせる")) {
                         guard let value = Double(displayedDistance.replacingOccurrences(of: ",", with: ".")), value > 0 else { return }
                         record = original.correctingDistance(to: units.meters(fromDistance: value))
                     }
                     .disabled(Double(displayedDistance.replacingOccurrences(of: ",", with: ".")) == nil)
                     if record != original {
-                        Button("補正を取り消す") {
+                        Button(L10n.text("補正を取り消す")) {
                             record = original
                             displayedDistance = ""
                         }
                     }
                 } header: {
-                    Text("距離の補正")
+                    Text(L10n.text("距離の補正"))
                 } footer: {
-                    Text("速度の変更を記録し忘れたときは、トレッドミルの表示距離を入力すると全区間の速度を同じ比率で補正し、カロリーも再計算します。")
+                    Text(L10n.text("速度の変更を記録し忘れたときは、トレッドミルの表示距離を入力すると全区間の速度を同じ比率で補正し、カロリーも再計算します。"))
                 }
 
                 if HealthKitService.shared.isAvailable {
                     Section {
-                        Toggle("ヘルスケアに保存", isOn: $saveToHealth)
+                        Toggle(L10n.text("ヘルスケアに保存"), isOn: $saveToHealth)
                     } footer: {
-                        Text("屋内\(record.primaryGait == .run ? "ランニング" : "ウォーキング")として、距離とアクティブエネルギーを保存します。")
+                        Text(L10n.format("屋内%@として、距離とアクティブエネルギーを保存します。", String(describing: record.primaryGait == .run ? L10n.text("ランニング") : L10n.text("ウォーキング"))))
                     }
                 }
             }
@@ -63,24 +63,24 @@ struct SummaryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("破棄", role: .destructive) { confirmDiscard = true }
+                    Button(L10n.text("破棄"), role: .destructive) { confirmDiscard = true }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if saving {
                         ProgressView()
                     } else {
-                        Button("保存") { Task { await save() } }.bold()
+                        Button(L10n.text("保存")) { Task { await save() } }.bold()
                     }
                 }
             }
-            .confirmationDialog("この記録を破棄しますか？", isPresented: $confirmDiscard, titleVisibility: .visible) {
-                Button("破棄", role: .destructive) { onClose() }
+            .confirmationDialog(L10n.text("この記録を破棄しますか？"), isPresented: $confirmDiscard, titleVisibility: .visible) {
+                Button(L10n.text("破棄"), role: .destructive) { onClose() }
             }
-            .alert("ヘルスケアに保存できませんでした", isPresented: Binding(get: { errorMessage != nil },
+            .alert(L10n.text("ヘルスケアに保存できませんでした"), isPresented: Binding(get: { errorMessage != nil },
                                                                  set: { if !$0 { errorMessage = nil; onClose() } })) {
                 Button("OK") {}
             } message: {
-                Text((errorMessage ?? "") + "\n記録はアプリ内に保存しました。")
+                Text((errorMessage ?? "") + L10n.text("\n記録はアプリ内に保存しました。"))
             }
             .interactiveDismissDisabled()
         }

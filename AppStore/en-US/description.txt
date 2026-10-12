@@ -1,0 +1,22 @@
+One step further. Even indoors.
+
+Treadmill helps you record indoor walks and runs with clear, readable metrics. Enter the speed and incline shown on your treadmill, tap Start, and track your workout at your own pace.
+
+WORKOUT METRICS AT A GLANCE
+Track time, distance, pace, estimated active calories, elevation gain and steps. Large speed and incline controls are easy to read on the treadmill console.
+
+FREE WORKOUTS AND TRAINING PROGRAMS
+Adjust speed and incline freely, or choose a program such as a 12-3-30 walk, hill intervals, walk & jog or running intervals. Voice and haptic guidance tell you when to change settings. Set a time, distance or calorie goal for a free workout.
+
+HISTORY THAT HELPS YOU KEEP GOING
+Review weekly totals, workout details, splits, and speed and incline charts. If you missed a speed change, match your finished workout to the distance shown on your treadmill and recalculate calories before saving.
+
+OPTIONAL APPLE HEALTH INTEGRATION
+Read weight and height, save indoor walking and running workouts, and restore this app’s saved workouts after reinstalling. Workouts not saved to Apple Health cannot be restored. Older workouts may restore as summaries only.
+
+YOUR DATA, ON YOUR DEVICE
+No account required. No ads or tracking SDKs. Workout data is not sent to servers operated by the publisher. Apple Health access and motion tracking are optional.
+
+English and Japanese are supported. Choose kilometers or miles in Settings.
+
+Requires an iPhone with iOS 17 or later. Steps require motion permission and carrying a supported iPhone; they may not be counted when the phone rests on the treadmill console. The app does not connect to or control treadmill hardware: keep the app’s settings aligned with the machine. Distance and calories are estimates based on entered settings and ACSM metabolic equations. This app is for general fitness recording, not medical use.

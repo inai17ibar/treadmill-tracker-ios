@@ -24,7 +24,7 @@ final class WorkoutStore {
                 session.setIncline(2, at: start.addingTimeInterval(1200))
                 session.setSpeed(5, at: start.addingTimeInterval(1500))
                 session.finish(at: start.addingTimeInterval(1800))
-                return WorkoutRecord(session: session, programName: "傾斜ウォーキング", steps: 3200)!
+                return WorkoutRecord(session: session, programName: L10n.text("傾斜ウォーキング"), steps: 3200)!
             }
             return
         }

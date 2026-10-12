@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import TreadmillKit
 
 /// Spoken prompts ("速度を 8.0 km/h に上げてください") that duck the user's music only while speaking.
 final class VoiceCoach: NSObject, AVSpeechSynthesizerDelegate {
@@ -18,7 +19,7 @@ final class VoiceCoach: NSObject, AVSpeechSynthesizerDelegate {
         try? session.setCategory(.playback, mode: .voicePrompt, options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers])
         try? session.setActive(true)
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "ja-JP")
+        utterance.voice = AVSpeechSynthesisVoice(language: L10n.languageCode == "ja" ? "ja-JP" : "en-US")
         synthesizer.speak(utterance)
     }
 

@@ -85,7 +85,8 @@ Appleの現行仕様に合うiPhone画面を使い、以下の5場面を候補�
 
 ## 公開ページの更新
 
-本文の唯一の編集元は `Sources/TreadmillTracker/Resources/AppInformation.json`。
+本文の編集元は `Sources/TreadmillTracker/Resources/AppInformation.json`（日本語）と
+`Sources/TreadmillTracker/Resources/AppInformation-en.json`（英語）。
 アプリ内の案内も同じファイルを読む。編集後に次を実行する。
 
 ```sh
@@ -103,3 +104,18 @@ GitHub Pagesはmainブランチの`/docs`を公開する。配信されたURLが
 - [Export compliance property](https://developer.apple.com/documentation/bundleresources/information-property-list/itsappusesnonexemptencryption)
 - [Screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications)
 - [Upload builds](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds)
+
+
+## 英語対応版の準備（2026-10-12）
+
+- アプリは日本語・英語に対応し、iOSのアプリ言語設定に従う。それ以外の言語では英語へフォールバックする。
+- 画面、メニュー、音声ガイド、HealthKit／モーションの権限文、オフラインヘルプ・ポリシーを翻訳済み。
+- 保存するメニュー名・ID・enumの値は従来のまま。既存履歴は表示時だけ翻訳する。
+- `en-US/` に英語ストア掲載文、`Screenshots/en-US/` に6.3インチ・6.9インチ各7枚を用意済み。
+- 英語Webページは `docs/en/`。日本語ページから言語を切り替えられる。
+- 英語掲載文・画像はまだApp Store Connectへ登録していない。現在の1.0.0審査待ちビルドには英語対応を含まない。
+- 次のリリースでは `project.yml` のアプリとフレームワークのバージョン・ビルド番号を更新し、新しいArchiveをアップロードする。
+- 海外配信前にApp Store Connectの配信地域を更新する。現時点では日本のみの設定を維持している。
+
+UIテストは `testCaptureEnglishStoreScreenshots` と `testCaptureStoreScreenshots` を個別実行する。
+スクリーンショットの書き出しは、各言語のテストだけを含むxcresultに対して行う（1結果につき7枚）。

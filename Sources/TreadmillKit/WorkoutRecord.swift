@@ -56,7 +56,7 @@ public struct WorkoutRecord: Codable, Identifiable, Hashable, Sendable {
     public var maxInclinePercent: Double { segments.map(\.inclinePercent).max() ?? 0 }
 
     public var title: String {
-        programName ?? (primaryGait == .run ? "ランニング" : "ウォーキング")
+        programName.map { L10n.text($0) } ?? (primaryGait == .run ? L10n.text("ランニング") : L10n.text("ウォーキング"))
     }
 
     public func splits(unitMeters: Double) -> [Split] { Splits.compute(segments, unitMeters: unitMeters) }

@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "TreadmillTracker",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v17),
         .macOS(.v14)
@@ -14,6 +15,7 @@ let package = Package(
         .target(
             name: "TreadmillKit",
             path: "Sources/TreadmillKit",
+            resources: [.process("Resources")],
             swiftSettings: [.swiftLanguageMode(.v5)]
         ),
         .testTarget(

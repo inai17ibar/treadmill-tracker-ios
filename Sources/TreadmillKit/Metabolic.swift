@@ -7,8 +7,8 @@ public enum Gait: String, Codable, CaseIterable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .walk: return "ウォーキング"
-        case .run: return "ランニング"
+        case .walk: return L10n.text("ウォーキング")
+        case .run: return L10n.text("ランニング")
         }
     }
 }
@@ -21,9 +21,9 @@ public enum GaitMode: String, Codable, CaseIterable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .auto: return "自動"
-        case .walk: return "歩く"
-        case .run: return "走る"
+        case .auto: return L10n.text("自動")
+        case .walk: return L10n.text("歩く")
+        case .run: return L10n.text("走る")
         }
     }
 

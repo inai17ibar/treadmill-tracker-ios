@@ -9,20 +9,20 @@ struct HistoryView: View {
         NavigationStack {
             Group {
                 if store.records.isEmpty {
-                    ContentUnavailableView("まだ記録がありません", systemImage: "figure.walk",
-                                           description: Text("ワークアウトを終了すると、ここに保存されます。"))
+                    ContentUnavailableView(L10n.text("まだ記録がありません"), systemImage: "figure.walk",
+                                           description: Text(L10n.text("ワークアウトを終了すると、ここに保存されます。")))
                 } else {
                     List {
-                        Section("今週") {
+                        Section(L10n.text("今週")) {
                             let week = WorkoutTotals.week(of: Date(), records: store.records)
                             HStack {
-                                total("回数", "\(week.count)")
-                                total("時間", Format.duration(week.activeDuration))
-                                total("距離", "\(units.distanceText(meters: week.distanceMeters)) \(units.distanceLabel)")
-                                total("消費", "\(Format.kcal(week.activeKcal)) kcal")
+                                total(L10n.text("回数"), "\(week.count)")
+                                total(L10n.text("時間"), Format.duration(week.activeDuration))
+                                total(L10n.text("距離"), "\(units.distanceText(meters: week.distanceMeters)) \(units.distanceLabel)")
+                                total(L10n.text("消費"), "\(Format.kcal(week.activeKcal)) kcal")
                             }
                         }
-                        Section("記録") {
+                        Section(L10n.text("記録")) {
                             ForEach(store.records) { record in
                                 NavigationLink {
                                     RecordDetailView(recordID: record.id)
@@ -39,7 +39,7 @@ struct HistoryView: View {
                 }
             }
             .background(Theme.background)
-            .navigationTitle("履歴")
+            .navigationTitle(L10n.text("履歴"))
         }
     }
 
@@ -91,12 +91,12 @@ struct RecordDetailView: View {
                 if HealthKitService.shared.isAvailable {
                     Section {
                         if record.savedToHealth {
-                            Label("ヘルスケアに保存済み", systemImage: "checkmark.circle").foregroundStyle(.secondary)
+                            Label(L10n.text("ヘルスケアに保存済み"), systemImage: "checkmark.circle").foregroundStyle(.secondary)
                         } else {
                             Button {
                                 Task { await saveToHealth(record) }
                             } label: {
-                                if saving { ProgressView() } else { Label("ヘルスケアに保存", systemImage: "heart") }
+                                if saving { ProgressView() } else { Label(L10n.text("ヘルスケアに保存"), systemImage: "heart") }
                             }
                             .disabled(saving)
                         }
@@ -110,7 +110,7 @@ struct RecordDetailView: View {
                 Button("OK") {}
             }
         } else {
-            ContentUnavailableView("記録が見つかりません", systemImage: "questionmark")
+            ContentUnavailableView(L10n.text("記録が見つかりません"), systemImage: "questionmark")
         }
     }
 

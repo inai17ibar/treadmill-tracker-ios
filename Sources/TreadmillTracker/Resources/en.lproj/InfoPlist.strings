@@ -1,0 +1,4 @@
+"CFBundleDisplayName" = "Treadmill";
+"NSHealthShareUsageDescription" = "Read your weight and height to estimate calories, and this app’s workouts, distance and active energy to restore your history.";
+"NSHealthUpdateUsageDescription" = "Save your indoor walking and running workouts, distance and active energy to Apple Health.";
+"NSMotionUsageDescription" = "Measure your steps and cadence (steps per minute) during workouts.";
