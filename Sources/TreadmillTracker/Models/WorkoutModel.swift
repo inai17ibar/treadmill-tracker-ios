@@ -2,6 +2,7 @@ import Foundation
 import Observation
 import TreadmillKit
 import UIKit
+import HealthKit
 
 /// Drives a live treadmill workout: the session clock, program steps, pedometer and voice prompts.
 @MainActor
@@ -16,6 +17,14 @@ final class WorkoutModel {
     private(set) var cadence: Double?
     private(set) var finishedRecord: WorkoutRecord?
 
+    private let workoutID = UUID()
+    private var linkedWatch = false
+    private var lastWatchUpdate = Date.distantPast
+    private var heartSamples: [HeartRatePoint] = []
+    private(set) var heartBPM: Double?
+    private(set) var watchMessage: String?
+    private var latestHeartDate: Date?
+    private let healthStore = HKHealthStore()
     private let coach: VoiceCoach
     private let pedometer = PedometerService()
     private let haptics = UINotificationFeedbackGenerator()
@@ -59,6 +68,7 @@ final class WorkoutModel {
         }
         #endif
         session.start(at: date)
+        startWatch()
         now = date
         UIApplication.shared.isIdleTimerDisabled = true
         pedometer.start(from: date) { [weak self] steps, cadence in
@@ -93,6 +103,7 @@ final class WorkoutModel {
             break
         }
         now = date
+        publishWatch(session.state == .paused ? .paused : .running)
     }
 
     /// `delta` is in the displayed unit (km/h or mph).
@@ -128,10 +139,16 @@ final class WorkoutModel {
         coach.stop()
         UIApplication.shared.isIdleTimerDisabled = false
         finishedRecord = WorkoutRecord(session: session, programName: program?.name, steps: steps > 0 ? steps : nil)
+        finishedRecord?.id = workoutID
+        finishedRecord?.heartRate = heartSamples.isEmpty ? nil : heartSamples
+        publishWatch(.finished)
+        WatchBridge.shared.onHeart = nil
     }
 
     /// Stops everything without producing a record (e.g. the view was dismissed).
     func cancel() {
+        if finishedRecord == nil { publishWatch(.cancelled) }
+        WatchBridge.shared.onHeart = nil
         tickTask?.cancel()
         pedometer.stop()
         coach.stop()
@@ -139,6 +156,8 @@ final class WorkoutModel {
     }
 
     private func tick() {
+        if let latestHeartDate, Date().timeIntervalSince(latestHeartDate) > 20 { heartBPM = nil }
+        if (session.state == .running || session.state == .paused) && Date().timeIntervalSince(lastWatchUpdate) >= 15 { publishWatch(session.state == .paused ? .paused : .running) }
         guard session.state == .running else { return }
         now = Date()
         let m = metrics
@@ -173,6 +192,38 @@ final class WorkoutModel {
             goalAnnounced = true
             haptics.notificationOccurred(.success)
             coach.say(L10n.text("目標を達成しました！"))
+        }
+    }
+
+    private func publishWatch(_ state: LinkedWorkout.State) {
+        guard linkedWatch, let start = session.startDate else { return }
+        lastWatchUpdate = Date()
+        WatchBridge.shared.publishWorkout(.init(id: workoutID, start: start, state: state, running: session.gait == .run))
+    }
+    private func startWatch() {
+        let defaults = UserDefaults.standard
+        guard defaults.bool(forKey: "linkWatchWorkout"),
+              let data = defaults.data(forKey: HeartRateSettings.storageKey),
+              let settings = try? JSONDecoder().decode(HeartRateSettings.self, from: data), settings.configured else { return }
+        linkedWatch = true
+        watchMessage = L10n.text("Watchへ開始をリクエスト中")
+        WatchBridge.shared.onHeart = { [weak self] id, point in
+            guard let self, id == self.workoutID, abs(Date().timeIntervalSince(point.date)) <= 20 else { return }
+            self.heartBPM = point.bpm; self.latestHeartDate = point.date
+            if self.heartSamples.last.map({ point.date > $0.date }) ?? true { self.heartSamples.append(point) }
+            self.watchMessage = nil
+        }
+        publishWatch(.running)
+        Task {
+            let configuration = HKWorkoutConfiguration()
+            configuration.activityType = session.gait == .run ? .running : .walking
+            configuration.locationType = .indoor
+            do {
+                try await HealthKitService.shared.requestAuthorization()
+                guard session.state == .running || session.state == .paused else { return }
+                try await healthStore.startWatchApp(toHandle: configuration)
+            }
+            catch { watchMessage = L10n.text("Watchに接続できません。Watchアプリを開いてください。iPhoneの記録は継続します。") }
         }
     }
 

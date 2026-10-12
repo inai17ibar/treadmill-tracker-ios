@@ -48,6 +48,11 @@ struct WorkoutView: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.bottom, 4)
 
+                if let heart = model.heartBPM {
+                    Label(String(format: "%.0f BPM", heart), systemImage: "heart.fill").foregroundStyle(.pink)
+                } else if let message = model.watchMessage {
+                    Text(message).font(.footnote).foregroundStyle(Theme.secondary)
+                }
                 ControlRow(title: L10n.text("速度"), value: units.speedText(kmh: session.speedKmh), unit: units.speedLabel,
                            small: 0.1, large: 1, accent: Theme.lime) { model.changeSpeed(by: $0) }
                 ControlRow(title: L10n.text("傾斜"), value: Format.percent(session.inclinePercent), unit: "%",

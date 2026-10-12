@@ -170,3 +170,42 @@
 "一定ペースで 20 分走る。傾斜 1% で屋外ランに近い負荷" = "Run steadily for 20 minutes at 1% incline, plus a warm-up and cool-down";
 "%@ キロ毎時" = "%@ kilometers per hour";
 "%@ マイル毎時" = "%@ miles per hour";
+
+"記録を保存しました" = "Workout saved";
+"Watchに保存しました。ヘルスケアへの保存に失敗しました。" = "Saved on Watch. Could not save to Apple Health.";
+"ヘルスケアを利用できません" = "Health data is unavailable";
+"終了して保存" = "Finish & Save";
+"目標心拍数" = "Target Heart Rate";
+"目標範囲はiPhoneの設定で調整してください。体調や体感を優先しましょう。" = "Adjust your target range in iPhone Settings. Listen to your body.";
+"心拍を確認中" = "Measuring heart rate";
+"ゆっくり始めましょう" = "Start gently";
+"余裕があれば少しペースを上げましょう" = "If comfortable, pick up the pace";
+"いい調子。このペースで" = "Doing great. Keep this pace";
+"少しペースを落としましょう" = "Ease the pace a little";
+"Apple Watch 心拍ガイド" = "Apple Watch Heart Rate Guide";
+"目標の下限" = "Lower target";
+"目標の上限" = "Upper target";
+"初期値は仮の範囲です。年齢・体力・服薬によって適切な負荷は異なります。自分に合う範囲へ調整し、体調や体感を優先してください。" = "The initial range is a placeholder. Suitable effort varies with age, fitness and medication. Adjust it to suit you and listen to your body.";
+"振動でアドバイス" = "Haptic guidance";
+"Watchの運動をヘルスケアに保存" = "Save Watch workouts to Apple Health";
+"設定はWatchに接続できたときに反映され、次の運動から使われます。心拍ガイドはWatch単体でも動きます。" = "Settings sync when Watch is available and apply to the next workout. Guidance works without your iPhone.";
+"最初の2分はウォームアップ。15秒の平均心拍を使い、範囲外の状態が15秒続いたら案内します。振動の間隔は最低60秒です。" = "Warm up for the first two minutes. Guidance uses a 15-second average and waits for 15 seconds outside your range. Haptics are at least 60 seconds apart.";
+"胸の痛み、めまい、強い息苦しさがある場合は運動を中止してください。表示は運動強度の目安で、医療判断や減量効果の保証ではありません。" = "Stop exercising if you have chest pain, dizziness or severe breathlessness. Guidance estimates effort; it is not medical advice or a guarantee of weight loss.";
+
+"心拍数" = "Heart Rate";
+
+"この目標範囲をWatchで使う" = "Use this target range on Watch";
+"iPhoneで目標心拍数を設定してください" = "Set your target heart rate on iPhone first";
+
+"使い方" = "How to Use";
+"Watch連携の使い方" = "Watch Linking Guide";
+"iPhoneの運動とWatchを連動" = "Link iPhone workouts with Watch";
+"Watchへ開始をリクエスト中" = "Requesting workout on Watch";
+"Watchに接続できません。Watchアプリを開いてください。iPhoneの記録は継続します。" = "Cannot connect to Watch. Open the Watch app. iPhone recording continues.";
+"別の運動を計測中です。Watchの運動を終了してからiPhoneで開始してください。" = "Another workout is active. End the Watch workout before starting on iPhone.";
+"開始・一時停止・終了はiPhoneで操作" = "Start, pause and finish on iPhone";
+"心拍測定を終了" = "End heart-rate measurement";
+"iPhoneで目標心拍数を設定し、連動をオンにします。Watchを装着・ロック解除して、初回は心拍の読み取りを許可してください。" = "Set a target range and enable linking on iPhone. Wear and unlock Watch and allow heart-rate access the first time.";
+"iPhoneでスタートするとWatchへ開始をリクエストします。心拍が表示されたことを確認してください。一時停止・再開・終了もiPhoneから操作します。" = "Start on iPhone to request measurement on Watch. Confirm that heart rate appears. Pause, resume and finish on iPhone.";
+"連動中はiPhoneで保存します。Watchは心拍を後から同じ記録へ追加するため、接続が切れても2件には分かれません。Watch単体で始める場合はWatchで終了・保存してください。" = "Save linked workouts on iPhone. Delayed heart data joins the same record. For Watch-only workouts, finish and save on Watch.";
+"心拍が出ない場合はWatchアプリを開き、装着状態・許可・接続を確認してください。体調や体感を優先し、異変を感じたら運動を中止してください。" = "If heart rate is missing, open the Watch app and check fit, permissions and connection. Listen to your body and stop if you feel unwell.";

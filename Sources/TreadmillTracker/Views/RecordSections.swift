@@ -44,7 +44,7 @@ struct RecordSections: View {
             if record.healthSummary == nil || record.healthSummary?.elevationMeters != nil {
                 LabeledContent(L10n.text("上昇"), value: String(format: "%.0f m", m.elevationMeters))
             }
-            if record.healthSummary != nil {
+            if record.healthSummary != nil && record.heartRate == nil {
                 Text(L10n.text("ヘルスケアから概要を復元した記録です。元の速度・傾斜の区間や体重は保存されていないため、表示できません。"))
                     .font(.footnote).foregroundStyle(.secondary)
             }
@@ -62,6 +62,15 @@ struct RecordSections: View {
             }
         }
 
+        if let heart = record.heartRate, !heart.isEmpty {
+            Section(L10n.text("心拍数")) {
+                Chart(Array(heart.enumerated()), id: \.offset) { item in
+                    LineMark(x: .value(L10n.text("分"), item.element.date.timeIntervalSince(record.startDate) / 60),
+                             y: .value("BPM", item.element.bpm))
+                        .foregroundStyle(.pink)
+                }.chartYAxisLabel("BPM").frame(height: 140)
+            }
+        }
         if !record.segments.isEmpty {
             Section(L10n.text("速度と傾斜")) {
                 Chart(points) { p in

@@ -37,7 +37,18 @@ final class WorkoutStore {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("workouts.json")
     }
 
-    func add(_ record: WorkoutRecord) {
+    private var heartInboxURL: URL { url.deletingLastPathComponent().appendingPathComponent("WatchHeartInbox.json") }
+    private func attachingHeart(_ record: WorkoutRecord) -> WorkoutRecord {
+        var copy = record
+        let pending = (try? Data(contentsOf: heartInboxURL)).flatMap { try? WorkoutRecord.decodeList($0) } ?? []
+        let existing = records.first { $0.id == record.id }?.heartRate ?? []
+        let delayed = pending.first { $0.id == record.id }?.heartRate ?? []
+        let points = Array(Set(existing + delayed + (record.heartRate ?? []))).sorted { $0.date < $1.date }
+        if !points.isEmpty { copy.heartRate = points }
+        return copy
+    }
+    func add(_ incoming: WorkoutRecord) {
+        let record = attachingHeart(incoming)
         records.removeAll { $0.id == record.id }
         records.append(record)
         records.sort { $0.startDate > $1.startDate }
@@ -46,7 +57,7 @@ final class WorkoutStore {
 
     func update(_ record: WorkoutRecord) {
         guard let i = records.firstIndex(where: { $0.id == record.id }) else { return }
-        records[i] = record
+        records[i] = attachingHeart(record)
         save()
     }
 
@@ -57,6 +68,27 @@ final class WorkoutStore {
         try WorkoutRecord.encodeList(result.records).write(to: url, options: .atomic)
         records = result.records
         return result.added
+    }
+
+    func importWatchRecords(_ incoming: [WorkoutRecord]) throws {
+        var merged = records
+        var pending = (try? Data(contentsOf: heartInboxURL)).flatMap { try? WorkoutRecord.decodeList($0) } ?? []
+        for record in incoming {
+            if record.linkedPhone == true {
+                if let index = merged.firstIndex(where: { $0.id == record.id }) {
+                    merged[index].heartRate = Array(Set((merged[index].heartRate ?? []) + (record.heartRate ?? []))).sorted { $0.date < $1.date }
+                }
+                pending.removeAll { $0.id == record.id }; pending.append(record)
+                continue
+            }
+            if let index = merged.firstIndex(where: { $0.id == record.id }) {
+                if merged[index].heartRate == nil { merged[index] = record }
+            } else { merged.append(record) }
+        }
+        try WorkoutRecord.encodeList(pending).write(to: heartInboxURL, options: .atomic)
+        merged.sort { $0.startDate > $1.startDate }
+        try WorkoutRecord.encodeList(merged).write(to: url, options: .atomic)
+        records = merged
     }
 
     func delete(_ ids: Set<UUID>) {

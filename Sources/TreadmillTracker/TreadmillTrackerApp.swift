@@ -16,6 +16,13 @@ struct TreadmillTrackerApp: App {
                     .tabItem { Label(L10n.text("設定"), systemImage: "gearshape") }
             }
             .environment(store)
+            .task {
+                WatchBridge.shared.onRecords = { records in
+                    try store.importWatchRecords(records)
+                }
+                WatchBridge.shared.importPendingRecords()
+                WatchBridge.shared.activate()
+            }
             .tint(Theme.lime)
             .foregroundStyle(Theme.text)
             .preferredColorScheme(.dark)

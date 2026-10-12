@@ -31,6 +31,10 @@ struct SettingsView: View {
                     Text(L10n.text("消費カロリーは体重に比例します。正確な体重を設定してください。"))
                 }
 
+                Section {
+                    NavigationLink(L10n.text("Apple Watch 心拍ガイド")) { WatchSettingsView() }
+                }
+
                 Section(L10n.text("表示")) {
                     Picker(L10n.text("単位"), selection: $units) {
                         ForEach(UnitSystem.allCases, id: \.self) { Text($0.displayName).tag($0) }

@@ -14,6 +14,8 @@ public struct WorkoutRecord: Codable, Identifiable, Hashable, Sendable {
     public var distanceCorrection: Double
     /// Older HealthKit workouts can only supply totals, not treadmill settings.
     public var healthSummary: HealthWorkoutSummary?
+    public var heartRate: [HeartRatePoint]?
+    public var linkedPhone: Bool?
 
     public init(id: UUID = UUID(), startDate: Date, endDate: Date, segments: [WorkoutSegment], weightKg: Double,
                 programName: String? = nil, steps: Int? = nil, savedToHealth: Bool = false, distanceCorrection: Double = 1) {
@@ -110,6 +112,7 @@ public struct WorkoutHealthArchive: Codable, Sendable {
         segmentCount = record.segments.filter { $0.duration > 0 }.count
         header = record
         header.segments = []
+        header.heartRate = nil // Keep workout metadata small; the full series remains in local history.
         header.savedToHealth = true
     }
 

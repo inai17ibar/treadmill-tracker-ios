@@ -103,6 +103,13 @@ final class HealthKitService {
         if let name = record.programName {
             metadata[HKMetadataKeyWorkoutBrandName] = name
         }
+        if let summary = record.healthSummary {
+            let totals: [HKQuantitySample] = [
+                HKQuantitySample(type: HKQuantityType(.distanceWalkingRunning), quantity: HKQuantity(unit: .meter(), doubleValue: summary.distanceMeters), start: record.startDate, end: record.endDate),
+                HKQuantitySample(type: HKQuantityType(.activeEnergyBurned), quantity: HKQuantity(unit: .kilocalorie(), doubleValue: summary.activeKcal), start: record.startDate, end: record.endDate)
+            ]
+            try await builder.addSamples(totals)
+        }
         try await builder.addMetadata(metadata)
 
         try await builder.endCollection(at: record.endDate)
@@ -121,7 +128,10 @@ final class HealthKitService {
         try await requestAuthorization()
         let descriptor = HKSampleQueryDescriptor(
             predicates: [.workout(NSCompoundPredicate(andPredicateWithSubpredicates: [
-                HKQuery.predicateForObjects(from: HKSource.default()),
+                NSCompoundPredicate(orPredicateWithSubpredicates: [
+                    HKQuery.predicateForObjects(from: HKSource.default()),
+                    HKQuery.predicateForObjects(withMetadataKey: "com.inai17ibar.TreadmillTracker.watchRecord")
+                ]),
                 HKQuery.predicateForObjects(withMetadataKey: HKMetadataKeyIndoorWorkout, allowedValues: [true])
             ]))],
             sortDescriptors: [SortDescriptor(\.startDate, order: .reverse)])
@@ -129,6 +139,13 @@ final class HealthKitService {
         var result = RestorationResult()
         for workout in workouts where workout.workoutActivityType == .walking || workout.workoutActivityType == .running {
             try Task.checkCancellation()
+            if workout.sourceRevision.source.bundleIdentifier == "com.inai17ibar.TreadmillTracker.watchkitapp",
+               let encoded = workout.metadata?["com.inai17ibar.TreadmillTracker.watchRecord"] as? String,
+               var record = try? WorkoutRecord.decodeList(Data(encoded.utf8)).first {
+                record.savedToHealth = true
+                result.records.append(record)
+                continue
+            }
             let archive: WorkoutHealthArchive? = decodeMetadata(workout.metadata?[Self.archiveKey])
             if let archive {
                 let samples = try await HKSampleQueryDescriptor(
